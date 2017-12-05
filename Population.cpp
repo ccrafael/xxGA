@@ -5,108 +5,76 @@
  *      Author: rafael
  */
 #include "Population.h"
-#include "Environment.h"
-#include "Util.h"
-#include "ga.h"
 
-Population::Population(int size) {
-	Population::size = size;
+log4cxx::LoggerPtr Population::logger(log4cxx::Logger::getLogger("main"));
+
+Population::Population(Problem * problem, int populationSize, int genesSize) {
+	this->size = populationSize;
+	this->genesSize = genesSize;
+	this->problem = problem;
+
+	// Create a random population
+	for (int i = 0; i < size; i++) {
+		Individual * individual = new Individual(genesSize);
+
+		double fitness = problem->evaluate(individual);
+		individual->setFitness(fitness);
+		individual->setEvaluated(true);
+
+		this->individuals.insert(individual);
+	}
 }
 
 Population::~Population() {
-	for (int i = 0; i < size; i++) {
-		delete Population::individuals.at(i);
+	while (this->individuals.size() > 0) {
+		it = this->individuals.begin();
+		this->individuals.erase(it);
+
+		delete *it;
 	}
 }
 
-void Population::init() {
-	for (int i = 0; i < size; i ++) {
-		Population::individuals.push_back(new Individual(GA::GenesNumber));
-	}
+IContainer * Population::getIndividuals() {
+	return nullptr;
 }
 
-int Population::menor() {
-	double menor = 0;
-
-	for (unsigned int i = 1; i < Population::individuals.size(); i++ ) {
-		if (individuals.at(i)->getFitness() < individuals.at(menor)->getFitness()) {
-			menor = i;
-		}
-	}
-
-	return menor;
-}
-/**
- * obtiene el mayor dado un array de posiciones de individuos
+/*
+ * Remove fron the current population the set of individuals passed as
+ * argument. Each object is just removed from the internal structure but its
+ * memory is not liberated.
+ *
+ * @param individuals The set of individuals to remove from population.
  */
-int Population::mayor(vector<int> ind) {
-	int mayor = ind[0];
-	for (unsigned int i = 1; i < ind.size(); i++ ) {
-		if (individuals.at(ind[i])->getFitness() > individuals.at(mayor)->getFitness()) {
-			mayor = ind[i];
-		}
-	}
-	return mayor;
+void Population::remove(IContainer * individuals) {
+
 }
-
-
-void Population::generationReplacement(IContainer newgeneration) {
-
-	int i = menor();
-	Individual * to_kill = individuals.at(i);
-	individuals[i] = newgeneration.at(0);
-	delete to_kill;
-}
-
-IContainer Population::getIndividuals() {
-	return individuals;
-}
-
-/**
- * binary tournament
+/*
+ * The same than remove method but the individuals  memory are liberated.
+ * @param individuals The set of individuals to completely remove from population
+ * and free its memory.
  */
-IContainer Population::parentsSelection() {
-	switch (GA::ParentSelectionType) {
-		case 1: {
-			return binaryTournament();
-		}
+void Population::eliminate(IContainer * individuals) {
 
-		default: {
-			return binaryTournament();
-		}
-	}
+}
+/*
+ * Add a set of individuals to the current population. The individuals will be reevaluated
+ * when they are added to the population.
+ * @param individuals The set of individuals to add.
+ */
+void Population::add(IContainer * individuals) {
+
 }
 
-IContainer Population::binaryTournament() {
-	int i = 0;
-	IContainer parents;
-	vector<int> vec;
-	bool present = false;
-	while (i < 2 ) {
-		int index = mayor(Util::random(GA::IndividualsNumber, GA::TournamentSize) );
-
-		// no se permiten padres repetidos
-		for (int j = 0; j < vec.size(); j++) if (present = (vec[j]==index)) break;
-
-		if (!present) {
-			vec.push_back(index);
-			parents.push_back(Population::individuals.at(index));
-			i++;
-		}
-	}
-	return parents;
-}
-
-ostream& operator<< (ostream& os, Population * po) {
-	for (unsigned int i = 0; i < po->getIndividuals().size(); i++) {
-		os << "  "<< i<<":"<<po->getIndividuals().at(i) << endl;
+ostream& operator<<(ostream& os, Population * po) {
+	for (unsigned int i = 0; i < po->getIndividuals()->size(); i++) {
+		os << "  " << i << ":" << po->getIndividuals()->at(i) << std::endl;
 	}
 	return os;
 }
 
-ostream& operator<< (ostream& os, Population po) {
-	for (unsigned int i = 0; i < po.getIndividuals().size(); i++) {
-		os << "  "<< i<<":"<<po.getIndividuals().at(i) << endl;
+ostream& operator<<(ostream& os, Population po) {
+	for (unsigned int i = 0; i < po.getIndividuals()->size(); i++) {
+		os << "  " << i << ":" << po.getIndividuals()->at(i) << endl;
 	}
 	return os;
 }

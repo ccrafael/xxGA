@@ -14,11 +14,12 @@ class Individual {
 	Genotype * genotype;
 	double fitness;
 	bool eval;
+	bool offspring;
 public:
 	/**
 	 * create an idividual with a random genotype
 	 */
-	Individual(int genotype_size);
+	Individual(int genotypeSize);
 
 	/**
 	 * create an individual with a suplied genotype
@@ -32,10 +33,10 @@ public:
 	 */
 	double getFitness();
 
-	/**
-	 *
+	/*
+	 * Set the individual fitness.
 	 */
-	void evaluate(double fitness);
+	void setFitness(double fitness);
 
 
 	/**
@@ -43,14 +44,13 @@ public:
 	 */
 	Genotype * getGenotype();
 
-	/**
-	 * create a new individual crossingover with another one
-	 */
-	Individual * crossover(Individual * individual) ;
 
-	bool evaluated();
+	bool isEvaluated();
+	void setEvaluated(bool isEvaluated);
 
-	void mutate(double rate);
+	bool isOffspring();
+	void setOffspring(bool isOffspring);
+
 
 	friend ostream& operator<< (ostream& os, Individual * in );
 	friend ostream& operator<< (ostream& os, Individual in );
@@ -58,6 +58,5 @@ public:
 	friend int operator< (const Individual& id1, const Individual& id2);
 };
 
-typedef vector<Individual*> IContainer;
 
 #endif /* INDIVIDUAL_H_ */

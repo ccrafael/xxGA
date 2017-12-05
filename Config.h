@@ -8,6 +8,7 @@
 #define CONFIG_H_
 
 #include "sys.h"
+#include "Util.h"
 
 using namespace std;
 

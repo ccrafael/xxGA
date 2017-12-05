@@ -7,42 +7,72 @@
 #ifndef POPULATION_H_
 #define POPULATION_H_
 
-#include "sys.h"
+#include "log4cxx/logger.h"
+
+#include <memory>
+#include <set>
+#include "Problem.h"
 #include "Individual.h"
+#include "IContainer.h"
 
 using namespace std;
 
+struct ind_comparator {
+	bool operator() (const Individual * a, const Individual * b) {
+		return a < b;
+	}
+};
+
+/*
+ * Represent a population of individuals.
+ *
+ * The population is stored in a structure ordered by the fitness.
+ */
 class Population {
-	IContainer individuals;
-	typedef IContainer::iterator Iter;
+	static log4cxx::LoggerPtr logger;
+
+	multiset<Individual*, ind_comparator> individuals;//(ind_comparator);
+	multiset<Individual*>::iterator it;
+
+	Problem * problem;
+	int genesSize;
 	int size;
 public:
-	Population(int size);
-	Population(IContainer population);
-
+	/*
+	 * Population constructor. In the constructor a random population of size individuals
+	 * is created.
+	 * @param The size of the population.
+	 * @param The size of the genotype.
+	 */
+	Population(Problem * problem, int size, int genesSize);
 	virtual ~Population();
 
-	void init();
 
-	IContainer parentsSelection();
+	IContainer * getIndividuals();
 
-	/**
-	 * replace the populatin with a new generation
+	/*
+	 * Remove fron the current population the set of individuals passed as
+	 * argument. Each object is just removed from the internal structure but its
+	 * memory is not liberated.
+	 *
+	 * @param individuals The set of individuals to remove from population.
 	 */
-	void generationReplacement(IContainer newgeneration);
-
-	/**
-	 * get individuals
+	void remove(IContainer * individuals);
+	/*
+	 * The same than remove method but the individuals  memory are liberated.
+	 * @param individuals The set of individuals to completely remove from population
+	 * and free its memory.
 	 */
-	IContainer getIndividuals();
+	void eliminate(IContainer * individuals);
+	/*
+	 * Add a set of individuals to the current population. The individuals will be reevaluated
+	 * when they are added to the population.
+	 * @param individuals The set of individuals to add.
+	 */
+	void add(IContainer * individuals);
 
 	friend ostream& operator<< (ostream& os, Population * po);
 	friend ostream& operator<< (ostream& os, Population po);
-private:
-	IContainer binaryTournament();
-	int menor();
-	int selectparent();
-	int mayor(vector<int> ind);
 };
 
 #endif /* POPULATION_H_ */

@@ -2,41 +2,6 @@
 
 using namespace std;
 
-string trim( string str)
-{
-	// Trim Both leading and trailing spaces
-	size_t startpos = str.find_first_not_of(" \t"); // Find the first character position after excluding leading blank spaces
-	size_t endpos = str.find_last_not_of(" \t"); // Find the first character position from reverse af
-
-	// if all spaces or empty return an empty string
-	if( string::npos == startpos  ||  string::npos == endpos) {
-		return "";
-	} else {
-		return str.substr( startpos, endpos-startpos+1 );
-	}
-}
-
-void tokenize(const string& str,
-	vector<string>& tokens,
-	const string& delimiters = " ")
-{
-    // Skip delimiters at beginning.
-    string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-
-    // Find first "non-delimiter".
-    string::size_type pos     = str.find_first_of(delimiters, lastPos);
-
-    while (string::npos != pos || string::npos != lastPos)
-    {
-        // Found a token, add it to the vector.
-        tokens.push_back(str.substr(lastPos, pos - lastPos));
-        // Skip delimiters.  Note the "not_of"
-        lastPos = str.find_first_not_of(delimiters, pos);
-        // Find next "non-delimiter"
-        pos = str.find_first_of(delimiters, lastPos);
-    }
-}
-
 Config::Config() {
 	init();
 }
@@ -92,9 +57,9 @@ void Config::init() {
 
 		if(line.length() > 0 && line.at(0) != '#' && line.find("=")!=string::npos ) {
 			vector<string> tokens;
-			tokenize(line, tokens, "=");
-			key = tokens.size() > 0?trim(tokens.at(0)):"";
-			value = tokens.size() > 1?trim(tokens.at(1)):"";
+			Util::tokenize(line, tokens, "=");
+			key = tokens.size() > 0 ? Util::trim(tokens.at(0)):"";
+			value = tokens.size() > 1 ? Util::trim(tokens.at(1)):"";
 			this->properties[key] = value;
 		} else if ( line.length() > 0 && line.at(0) != '#' && line.find("=")==string::npos){
 			//cout << "error at line: "<< i << " line: "<< line << endl;

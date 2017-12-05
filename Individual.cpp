@@ -9,50 +9,47 @@
 
 Individual::Individual(int genotype_size) {
 	Individual::genotype = new Genotype(genotype_size);
-	eval = false;
+	this->eval = false;
+	this->offspring = false;
+	this->fitness = 0;
 }
 
 Individual::Individual(Genotype * genotype){
 	Individual::genotype = new Genotype( genotype->getGens() );
 	eval = false;
+	this->offspring = false;
+	this->fitness = 0;
 }
 
 Individual::~Individual() {
 	delete genotype;
 }
 
-Individual * Individual::crossover(Individual * individual) {
-
-	Individual * new_individual = new Individual(Individual::genotype);
-
-	new_individual->getGenotype()->recombination(individual->getGenotype());
-	return  new_individual;
-}
-
 double Individual::getFitness(){
 	return fitness;
 }
 
-void Individual::evaluate(double fitness) {
-	Individual::fitness = fitness;
-	Individual::eval = true;
+void Individual::setFitness(double fitness) {
+	this->fitness = fitness;
 }
+
 
 Genotype * Individual::getGenotype() {
 	return Individual::genotype;
 }
 
-bool Individual::evaluated() {
+bool Individual::isEvaluated() {
 	return Individual::eval;
 }
 
-void Individual::mutate(double rate) {
-	Individual::genotype->mutate(rate);
+void Individual::setEvaluated(bool evaluated) {
+	this->eval = evaluated;
 }
+
 
 ostream& operator<< (ostream& os, Individual * in ) {
 	os << in->getGenotype();
-	if (in->evaluated())
+	if (in->isEvaluated())
 		os << " - fitness: "<< in->getFitness();
 	else
 		os << " ind not evaluated";

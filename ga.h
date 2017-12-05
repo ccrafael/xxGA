@@ -7,153 +7,50 @@
 #ifndef GENETICALGORITHM_H_
 #define GENETICALGORITHM_H_
 
+#include "log4cxx/logger.h"
 #include "sys.h"
-#include "Environment.h"
+#include "OperatorFactory.h"
+#include "Config.h"
+#include "Operator.h"
+#include "Population.h"
+
 using namespace std;
 
 /**
- * como hacemos para llamar a las distintas funcionalidades.
- * Por ejemplo para llamar a un metodo de seleccion distinto de otro,
+ * A GA it is the core of the evolution.
  */
 class GA {
-	Environment * env;
-	int generation;
-public:
+	static log4cxx::LoggerPtr logger;
 
-	GA(Phenotype * ph);
+	Operator * parentSelection;
+	Operator * replacementSelection;
+	Operator * mutation;
+	Operator * crossover;
+
+protected:
+	Population * population;
+	Config * config;
+	Problem * problem;
+
+	int generation;
+
+	static constexpr const char* POPULATION_SIZE_PARAM = "population_size";
+public:
+	GA(Problem * problem, OperatorFactory * operatorFactory, Config * config);
 	virtual ~GA();
 
-	void run();
-	static void init();
+	/*
+	 * Run the evolution process generations times.
+	 * @param generations The number of generations that the algorithm will be runned.
+	 */
+	void evolve(int generations);
 
 	/*
-	 * Type of fitness/problem to be applied/solved by GA:
-	 * 1: Maximization of a function defined on real numbers
-	 * 2: Maximization of the One-Max function
-	 * ...
+	 * Get a reference to the current population.
+	 * @return A reference to the current population.
 	 */
-	static int FitnessType;
+	Population * getPopulation();
 
-	/*
-	 * Type of encondig
-	 * 1: Binary encoding, Genotype(0 1 0 1) -> Phenotype(5)
-	 * 2: Gray encoding,   Genotype(0 1 0 1) -> Phenotype(6) (See 'GAs + Data Structures = Evolution Programs', page 99)
-	 * ...
-	 */
-	static int EncodingType;
-
-	/*
-	 * Number of individuals in the population
-	 */
-	static int IndividualsNumber;
-
-	/*
-	 * Number of genes for each individual
-	 */
-	static int GenesNumber;
-
-	/*
-	 * Number of alleles for each gene
-	 */
-	static int AllelesNumber;
-
-	/*
-	 * Number of generations
-	 */
-	static int GenerationsNumber;
-
-	/*
-	 * Termination condition for the evolutionary algorithm:
-	 * 1: GenerationsNumber is interpreted as the number of generations for the algorithm
-	 * 2: GenerationsNumber is interpreted as the maximum number of generations allowed without change in the fitness of the best individual
-	 * ...
-	 */
-	static int TerminationConditionType;
-
-	/*
-	 * Type of population initialization
-	 * 1: Random
-	 * ...
-	 */
-	static int PopulationInitializationType;
-
-	/*
-	 * Type of parent selection (method of constructing the mating pool):
-	 * 1: Fitness-proportional selection
-	 * 2: Stochastic universal sampling
-	 * 3: Ranking selection (linear)
-	 * 4: Tournament selection
-	 * ...
-	 */
-	static int ParentSelectionType;
-
-	/*
-	 * Expected number of offspring alloted to the fittest individual (just in case of linear ranking selection). Range: [1,2]
-	 */
-	static int ExpectedOffspringNumberForFittestIndividual;
-
-	/*
-	 * Tournament size (just in case of tournament selection). Range: [2,IndividualsNumber].
-	 */
-	static int TournamentSize;
-
-	/*
-	 * Type of crossover:
-	 * 1: One-point crossover
-	 * 2: Two-point crossover
-	 * 3: N-point crossover
-	 * 4: Parameterized uniform crossover
-	 * ...
-	 */
-	static int CrossoverType;
-
-	/*
-	 * Crossover rate
-	 */
-	static double CrossoverRate;
-
-	/*
-	 * Number of crossover points (just in case of N-point crossover). Range: [1,GenesNumber-1]
-	 */
-	static int CrossoverPointsNumber;
-
-	/**
-	 * Exchange probability (just in case of Parameterized Uniform Crossover)
-	 */
-	static double ExchangeProbability;
-
-	/*
-	 * Type of mutation:
-	 * 1: Point probabilistic mutation
-	 * ...
-	 */
-	static int MutationType;
-
-	/*
-	 * Mutation rate
-	 */
-	static double MutationRate;
-
-	/*
-	 * Type of survivor selection:
-	 * 1: Generational model
-	 * 2: Steady state model
-	 *  ...
-	 */
-	static int SurvivorSelectionType;
-
-	/*
-	 * Elistism (just in case of generational model for survivor selection)
-	 * 1: ON
-	 * 2: OFF
-	 */
-	static int Elitism;
-
-	//Generational gap (just in case of steady state model for survivor
-	//  selection). Range: [1, IndividualsNumber].
-	static int GenerationalGap ;
-private:
-	bool isEnd();
 };
 
 #endif /* GENETICALGORITHM_H_ */

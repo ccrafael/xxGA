@@ -5,84 +5,66 @@
  *      Author: rafael
  */
 #include "ga.h"
-#include "Config.h"
 
-Config c("etc/config");
-int GA::AllelesNumber = c.getInt(ALLELES_NUMBERS);
-int GA::FitnessType = c.getInt(FITNESS_TYPE);
-int GA::EncodingType = c.getInt(ENCODING_TYPE);
-int GA::IndividualsNumber = c.getInt(INDIVIDUALS_NUMBER);
-int GA::GenesNumber= c.getInt(GENES_NUMBER);
-int GA::GenerationsNumber= c.getInt(GENERATIONS_NUMBERS);
-int GA::TerminationConditionType= c.getInt(TERMINATION_CONDITION_TYPE);
-int GA::PopulationInitializationType= c.getInt( POPULATION_INITIALIZATION_TYPE);
-int GA::ParentSelectionType= c.getInt(PARENT_SELECTION_TYPE);
-int GA::ExpectedOffspringNumberForFittestIndividual= c.getInt(EXPECTED_OFF_SPRING_NUMBER_FOR_FITNESS_INDIVIDUALS);
-int GA::TournamentSize= c.getInt(TOURNAMENT_SIZE);
-int GA::CrossoverType= c.getInt(CROSSOVER_TYPE);
-double GA::CrossoverRate= c.getDouble(CROSSOVER_RATE);
-int GA::CrossoverPointsNumber= c.getInt(CROSSOVER_POINTS_NUMBERS);
-double GA::ExchangeProbability= c.getDouble(ECHANGE_PROBATILITY);
-int GA::MutationType= c.getInt(MUTATION_TYPE);
-double GA::MutationRate = c.getDouble(MUTATION_RATE);
-int GA::SurvivorSelectionType= c.getInt(SURVIVOR_SELECTION_TYPE);
-int GA::Elitism= c.getInt(ELITISM);
-int GA::GenerationalGap= c.getInt(GENERATIONAL_GAP);
+log4cxx::LoggerPtr GA::logger(log4cxx::Logger::getLogger("main"));
 
-GA::GA(Phenotype * ph) {
-	GA::generation = 0;
-	GA::env = new Environment(ph);
+GA::GA(Problem * problem, OperatorFactory * operatorFactory, Config * config) {
+	LOG4CXX_DEBUG(logger, "Creating a new GA.");
+
+	this->problem = problem;
+	this->generation = 0;
+	this->config = config;
+	this->population = new Population(problem, config->getInt(POPULATION_SIZE_PARAM),
+			config->getInt("number_of_genes"));
+
+	// Build the operators
+	this->parentSelection = operatorFactory->createParentSelectionOperator(config);
+	this->replacementSelection = operatorFactory->createReplacementSelectionOperator(config);
+	this->mutation = operatorFactory->createMutationOperator(config);
+	this->crossover = operatorFactory->createCrossoverOperator(config);
 }
 
 GA::~GA() {
-	delete GA::env;
+	delete this->population;
+	delete this->parentSelection;
+	delete this->replacementSelection;
+	delete this->mutation;
+	delete this->crossover;
 }
 
-void GA::run(void) {
-	cout << " running for "<<GA::GenerationsNumber<<" generations. "<< endl;;
-	env->population->init();
-	env->evaluate( env->population->getIndividuals() );
+void GA::evolve(int generations) {
 
-	cout << "--- initial population -----------------------"<<endl;
-	cout << env->population <<endl;
+	LOG4CXX_DEBUG(logger, "Running for "<<generations<<".");
 
-	while ( !isEnd() ) {
+	for (int i = 0; i < generations; i++) {
 
-		IContainer parents = env->population->parentsSelection();
+		// Selection
+		IContainer * parents = this->parentSelection->operate( population->getIndividuals() );
 
-		for (unsigned int i = 0; i < parents.size(); i ++) {
-			cout << "  -parent "<<i<<":"<<parents.at(i)<<endl;
-		}
+		// Crossover
+		IContainer * offspring = this->crossover->operate( parents );
 
-		IContainer offspring = env->recombine( parents );
+		// Mutation
+		offspring = this->mutation->operate( offspring );
 
-		for (unsigned int i = 0; i < offspring.size(); i ++) {
-			cout << "   hijo   "<<i<<":"<<offspring.at(i)<< " <-- before mutate" <<endl;
-		}
-		env->mutate( offspring );
+		// Union of the population and new offspring generation
+		this->population->add( offspring );
 
-		env->evaluate( offspring );
+		// Replacement selection
+		IContainer * notSurvivors = this->replacementSelection->operate( population->getIndividuals() );
 
-		for (unsigned int i = 0; i < offspring.size(); i ++) {
-			cout << "  +hijo   "<<i<<":"<<offspring.at(i)<< endl;
-		}
+		// Eliminate from the population the individuals that not survived
+		population->eliminate( notSurvivors );
 
-		env->population->generationReplacement( offspring );
+		LOG4CXX_DEBUG(logger, "Generation: "<<this->generation<<".");
 
-		cout << "--- population "<< generation <<" -----------------------------"<<endl;
-		cout << env->population <<endl;
-
-		GA::generation ++;
+		this->generation ++;
 	}
-
-	cout << "--- population "<< generation <<" decoded -----------------------"<<endl;
-	cout << *env <<endl;
-
-	cout << " end running ..."<<endl;;
 }
 
-bool GA::isEnd() {
-	return ( GA::generation > GA::GenerationsNumber );
+
+Population * GA::getPopulation() {
+	return this->population;
 }
 
 

@@ -2,31 +2,43 @@
 
 using namespace std;
 
-Config::Config() {
+log4cxx::LoggerPtr Config::logger(log4cxx::Logger::getLogger("config"));
+
+Config::Config(string filename) {
+	if (filename.empty()) {
+		throw ConfigurationException("Configuration filename canat be empty.");
+	}
+	Config::filename = filename;
+
+	LOG4CXX_DEBUG(logger, "Loading configuration = "<<filename);
 	init();
 }
 
-
-Config::Config(string filename) {
-	Config::filename = filename;
-	cout << filename << endl;
-	init();
+string Config::find(string pname) {
+	map<string, string>::iterator it = properties.find(pname);
+	if (it != properties.end()) {
+		return it->second;
+	} else {
+		throw NotFoundException("Unknown property: [" + pname + "]");
+	}
 }
 
 int Config::getInt(string pname) {
-	int value;
-	sscanf(properties[pname].data(), "%d", &value);
-	return value;
+	string svalue = find(pname);
+	string::size_type sz;
+	return stoi(svalue, &sz);
+
 }
 
 double Config::getDouble(string pname) {
-	double value;
-	sscanf(properties[pname].data(), "%lf", &value);
-	return value;
+	string svalue = find(pname);
+	string::size_type sz;
+	return stod(svalue, &sz);
+
 }
 
 string Config::getProperty(string pname) {
-	return properties[pname];
+	return find(pname);
 }
 
 map<string, string> Config::getPropertiesMap(void) {
@@ -34,13 +46,13 @@ map<string, string> Config::getPropertiesMap(void) {
 }
 
 void Config::init() {
-	cout <<"reading file:  "<< filename << "..." << endl;
 
-	ifstream in( this->filename.data() );
+	ifstream in(this->filename.data());
 
-	if(!in) {
-		cout << "Cannot open file."<<endl;
-		return;
+	// check file is opened
+	if (!in) {
+		throw ConfigurationException(
+				"Cannot open configuration file: " + filename);
 	}
 
 	string line;
@@ -48,29 +60,29 @@ void Config::init() {
 	string value;
 
 	getline(in, line);
-	int i =0;
+	int i = 0;
 
+	// load the file
 	while (in) {
-		// eliminar el \r para textos windows
+		// remove \r for windows
 		int l = line.length();
-		line = l > 0 && line.at(l-1) == '\r'?line.substr(0,line.length()-1):line;
+		line = l > 0 && line.at(l - 1) == '\r' ?
+				line.substr(0, line.length() - 1) : line;
 
-		if(line.length() > 0 && line.at(0) != '#' && line.find("=")!=string::npos ) {
+		if (line.length() > 0 && line.at(0) != '#'
+				&& line.find("=") != string::npos) {
 			vector<string> tokens;
 			Util::tokenize(line, tokens, "=");
-			key = tokens.size() > 0 ? Util::trim(tokens.at(0)):"";
-			value = tokens.size() > 1 ? Util::trim(tokens.at(1)):"";
+			key = tokens.size() > 0 ? Util::trim(tokens.at(0)) : "";
+			value = tokens.size() > 1 ? Util::trim(tokens.at(1)) : "";
 			this->properties[key] = value;
-		} else if ( line.length() > 0 && line.at(0) != '#' && line.find("=")==string::npos){
-			//cout << "error at line: "<< i << " line: "<< line << endl;
-		} else {
-			//cout << "comentario o linea vacia: "<< line << endl;
 		}
 		getline(in, line);
 
 		i++;
-	  }
-	  in.close();
+	}
+	in.close();
 }
+
 Config::~Config() {
 }

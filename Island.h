@@ -9,12 +9,15 @@
 #ifndef ISLAND_H_
 #define ISLAND_H_
 
+#include <functional>
 #include "log4cxx/logger.h"
 #include "ga.h"
 #include "Population.h"
 #include "Problem.h"
 #include "OperatorFactory.h"
 #include "Config.h"
+#include "Individual.h"
+#include "Output.h"
 
 using namespace std;
 
@@ -24,15 +27,16 @@ using namespace std;
 class Island: public GA {
 	vector<Island *> neighborhood;
 
-	Operator * emigrationSelection;
-	Operator * immigrationSelection;
+	std::function<IContainer* (IContainer*)> emigrationSelection;
+	std::function<IContainer* (IContainer*)> immigrationSelection;
 
 	static log4cxx::LoggerPtr logger;
 
-	static constexpr const char * PARAM_RUN_FOR_N_GENERATIONS =
-			"run_for_n_generations";
-
 	int maxGenerations;
+
+	static constexpr const char* MAX_GENERATIONS_PARAM = "NumberGenerations";
+	static constexpr const char * PARAM_RUN_FOR_N_GENERATIONS =
+			"MigrationEveryGenerations";
 
 	/*
 	 * TODO the stop condition should be provided from outside by the problem.
@@ -43,7 +47,6 @@ class Island: public GA {
 	bool isEnd();
 	void emigration();
 
-
 	/*
 	 * Select individuals for the emigration process.
 	 *
@@ -51,10 +54,16 @@ class Island: public GA {
 	 */
 	IContainer * getEmigrants();
 
+	/*
+	 * Select individuals for the immigration process.
+	 *
+	 * @return  A set of individuals, those individuals are removed from the population.
+	 */
+	IContainer * getInmigrants();
 
 public:
 	Island(Problem * problem, OperatorFactory * operatorFactory,
-			Config * config, vector<Island *> neighborghood);
+			Config * config, Output * output, vector<Island *> neighborghood);
 
 	virtual ~Island();
 
@@ -62,19 +71,6 @@ public:
 	 * Evolve the island population until the end of the algorithm.
 	 */
 	void evolveIsland();
-
-	/*
-	 * Get the current population of the island.
-	 * @return The population of the island.
-	 */
-	Population * getPopulation();
-
-	/*
-	 * Select individuals for the immigration process.
-	 *
-	 * @return  A set of individuals, those individuals are removed from the population.
-	 */
-	IContainer * getInmigrants();
 
 };
 

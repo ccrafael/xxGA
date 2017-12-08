@@ -8,55 +8,81 @@
 #ifndef OPERATORFACTORY_H_
 #define OPERATORFACTORY_H_
 
-
-#include "Operator.h"
-#include "operators/EmptyOperator.h"
+#include <functional>
 #include "Config.h"
+#include "IContainer.h"
+#include "operators/CrossoverCollection.h"
+#include "operators/MutationCollection.h"
+#include "operators/ReplacementCollection.h"
+#include "operators/SelectionCollection.h"
 
 /*
  * A factory used to build the operators that will be used later to apply the evolution
- * process.
+ * process. Each method return a lambda that represent a evolution operator.
+ * Take special care that some operator modify the internal collection of objects like the
+ * mutation operators. Other operators just return a collection of pointers but that
+ * container needs to be deleted by the external user. Works this way in order to save
+ * cpu clock cycles.
  */
 class OperatorFactory {
+	Config * config;
+
 public:
-	OperatorFactory();
+	OperatorFactory(Config * config);
 	virtual ~OperatorFactory();
 
 	/*
 	 * Create a new crossover operator.
 	 * @return A new cross overoperator.
 	 */
-	Operator * createCrossoverOperator(Config * config);
+	std::function<IContainer* (IContainer*)> createCrossoverOperator();
 
 	/*
-	 * Create a new mutation operator.
-	 * @return A new mutation operator.
+	 * Create a new mutation operator. This method must update the individuals that are
+	 * passed as argument.
+	 *
+	 * @return A new mutation operator. The function returned has the signature:
+	 *      param1: The set of individuals to mutate.
 	 */
-	Operator * createMutationOperator(Config * config);
+	std::function<void (IContainer*)> createMutationOperator();
 
 	/*
-	 * Create a new selection operator.
-	 * @return A new selection operator.
+	 * Create a new selection operator. The function must return a new structure with
+	 * the set of selected individuals. The returned structure must be removed when it
+	 * is not necessary.
+	 *
+	 * @return A new selection operator. The function returned has the signature:
+	 *        param1 population The population.
+	 *        return A new set with the individuals selected.
 	 */
-	Operator * createParentSelectionOperator(Config * config);
+	std::function<IContainer* (IContainer*)> createParentSelectionOperator();
 
 	/*
-	 * Create a new replacement selection operator.
-	 * @return A new replacement selection operator.
+	 * Create a new replacement selection operator. This method return a set of individuals
+	 * to be removed from the population. The method must not change the
+	 * original structures.
+	 * The returned structure should be removed when it is  not necessary.
+	 *
+	 * @return A new selection operator. The function returned has the signature:
+	 *      param1 populaton The population.
+	 *      param2 offspring The offspring.
+	 *      return A new replacement selection operator.
+	 *
+	 *
 	 */
-	Operator * createReplacementSelectionOperator(Config * config);
+	std::function<IContainer* (IContainer*, IContainer*)> createReplacementSelectionOperator();
 
 	/*
 	 * Create a new emigration selection operator.
 	 * @return A new migration selection operator.
 	 */
-	Operator * createEmigrationSelectionOperator(Config * config);
+	std::function<IContainer* (IContainer*)> createEmigrationSelectionOperator();
 
 	/*
 	 * Create a new immigration selection operator.
 	 * @return A new migration selection operator.
 	 */
-	Operator * createImmigrationSelectionOperator(Config * config);
+	std::function<IContainer* (IContainer*)> createImmigrationSelectionOperator();
 
 };
 

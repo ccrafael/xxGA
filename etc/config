@@ -1,3 +1,25 @@
+OutputFile = result.csv 
+ProblemFileConfig = etc/function.conf
+
+NumberIsles = 10
+
+# Number of individuals for a population into a island
+NumberIndividuals = 100
+
+# Number of genes for each individual
+NumberGenes = 15
+
+# Number of generations
+NumberGenerations = 100
+
+
+
+# Number of generations before the migration process start
+MigrationEveryGenerations = 10
+
+# Save the statictis for each generation
+SaveDetail = 1
+
 # Type of fitness/problem to be applied/solved by GA:
 # 1: Maximization of a function defined on real numbers
 # 2: Maximization of the One-Max function
@@ -11,14 +33,8 @@ EncodingType = 1
 # Number of individuals in the population
 IndividualsNumber = 100
 
-# Number of genes for each individual
-GenesNumber = 15
-
 # Number of alleles for each gene
 AllelesNumber = 2
-
-# Number of generations
-GenerationsNumber = 100
 
 # Termination condition for the evolutionary algorithm:
 # 1: GenerationsNumber is interpreted as the number of generations for the algorithm

@@ -9,48 +9,61 @@
 
 using namespace std;
 
-log4cxx::LoggerPtr Island::logger(log4cxx::Logger::getLogger("main"));
+log4cxx::LoggerPtr Island::logger(log4cxx::Logger::getLogger("island"));
 
 /**
  * Constructor.
  * @param
  */
 Island::Island(Problem * problem, OperatorFactory * operatorFactory, Config * config,
-		 vector<Island *> neighborhood): GA(problem, operatorFactory, config) {
+		 Output *output, vector<Island *> neighborhood): GA(problem, operatorFactory, config, output) {
 
-	LOG4CXX_DEBUG(logger, "Creating a new Island.");
+	LOG4CXX_INFO(logger, "Creating a new Island.");
 
-	this->maxGenerations = config->getInt("max_generations");
+	this->maxGenerations = config->getInt(MAX_GENERATIONS_PARAM);
 	this->neighborhood = neighborhood;
-	this->emigrationSelection = operatorFactory->createEmigrationSelectionOperator(config);
-	this->immigrationSelection = operatorFactory->createImmigrationSelectionOperator(config);
+	this->emigrationSelection = operatorFactory->createEmigrationSelectionOperator();
+	this->immigrationSelection = operatorFactory->createImmigrationSelectionOperator();
 }
 
 Island::~Island() {
-	delete this->emigrationSelection;
 }
 
+/**
+ * This is the main loop of the algorithm.
+ */
 void Island::evolveIsland() {
+
+	int generationsBeforeMigration = config->getInt(PARAM_RUN_FOR_N_GENERATIONS);
 
 	// evolve the population until the stop condition.
 	while (!this->isEnd()) {
+
 		// evolve the island for n generations
-		evolve(config->getInt(PARAM_RUN_FOR_N_GENERATIONS));
+		evolve(generationsBeforeMigration);
 
 		// emigrate population between neighbors
 		emigration();
 	}
 }
 
+
 void Island::emigration() {
+	LOG4CXX_INFO(logger, "Migration process. There are neighbors: "<<neighborhood.size());
+
 	vector<Island*>::iterator it = Island::neighborhood.begin();
 	while (it != Island::neighborhood.end()) {
 
 		Population * otherPopulation = (*it)->getPopulation();
 		Population * myPopulation = this->getPopulation();
 
-		IContainer * immigrants = this->emigrationSelection->operate(otherPopulation->getIndividuals());
-		IContainer * emigrants = this->emigrationSelection->operate(myPopulation->getIndividuals());
+		IContainer * pop = otherPopulation->get_individuals();
+
+		IContainer * immigrants = this->emigrationSelection(pop);
+		IContainer * emigrants = this->emigrationSelection(pop);
+
+		// free container memory no longer needed
+		delete pop;
 
 		// Exchange the the individuals between the populations
 		otherPopulation->remove(immigrants);
@@ -70,19 +83,18 @@ IContainer * Island::getEmigrants() {
 
 }
 
-Population * Island::getPopulation() {
-	return GA::getPopulation();
-}
-
 bool Island::isEnd() {
-	return this->maxGenerations < GA::generation;
+	return GA::generation > this->maxGenerations;
 }
 
 ostream& operator<< (ostream& os, Island en) {
 	Population * population = en.getPopulation();
-	for (unsigned int i =0; i < population->getIndividuals()->size(); i++) {
-		os<<i<<":" << population->getIndividuals()->at(i)<<endl;
+	IContainer * pop = population->get_individuals();
+	for (unsigned int i =0; i < pop->size(); i++) {
+		os<<i<<":" << pop->at(i)<<endl;
 	}
+	// delete container no longer needed
+	delete pop;
 
 	return os;
 }

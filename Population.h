@@ -7,10 +7,15 @@
 #ifndef POPULATION_H_
 #define POPULATION_H_
 
+#include <stdexcept>
+
 #include "log4cxx/logger.h"
 
 #include <memory>
 #include <set>
+#include <numeric>
+#include <cmath>
+
 #include "Problem.h"
 #include "Individual.h"
 #include "IContainer.h"
@@ -18,7 +23,7 @@
 using namespace std;
 
 struct ind_comparator {
-	bool operator() (const Individual * a, const Individual * b) {
+	bool operator()(const Individual * a, const Individual * b) {
 		return a < b;
 	}
 };
@@ -31,7 +36,7 @@ struct ind_comparator {
 class Population {
 	static log4cxx::LoggerPtr logger;
 
-	multiset<Individual*, ind_comparator> individuals;//(ind_comparator);
+	multiset<Individual*, ind_comparator> individuals; //(ind_comparator);
 	multiset<Individual*>::iterator it;
 
 	Problem * problem;
@@ -47,8 +52,7 @@ public:
 	Population(Problem * problem, int size, int genesSize);
 	virtual ~Population();
 
-
-	IContainer * getIndividuals();
+	IContainer * get_individuals();
 
 	/*
 	 * Remove fron the current population the set of individuals passed as
@@ -71,8 +75,12 @@ public:
 	 */
 	void add(IContainer * individuals);
 
-	friend ostream& operator<< (ostream& os, Population * po);
-	friend ostream& operator<< (ostream& os, Population po);
+	Individual * best();
+	Individual * worst();
+
+	double mean_fitness();
+	double total_fitness();
+	double stdev_fitness();
 };
 
 #endif /* POPULATION_H_ */

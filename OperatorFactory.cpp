@@ -7,13 +7,13 @@
 
 #include "OperatorFactory.h"
 
-OperatorFactory::OperatorFactory() {
-	// TODO Auto-generated constructor stub
+OperatorFactory::OperatorFactory(Config * config) {
+	this->config = config;
 
 }
 
 OperatorFactory::~OperatorFactory() {
-	// TODO Auto-generated destructor stub
+	// nothing to clean
 }
 
 
@@ -22,46 +22,46 @@ OperatorFactory::~OperatorFactory() {
  * Create a new crossover operator.
  * @return A new cross overoperator.
  */
-Operator * OperatorFactory::createCrossoverOperator(Config * config) {
-	return new EmptyOperator();
+std::function<IContainer* (IContainer*)> OperatorFactory::createCrossoverOperator() {
+	return crossover::empty;
 }
 
 /*
  * Create a new mutation operator.
  * @return A new mutation operator.
  */
-Operator * OperatorFactory::createMutationOperator(Config * config) {
-	return new EmptyOperator();
+std::function<void (IContainer*)> OperatorFactory::createMutationOperator() {
+	return mutation::empty;
 }
 
 /*
  * Create a new selection operator.
  * @return A new selection operator.
  */
-Operator * OperatorFactory::createParentSelectionOperator(Config * config) {
-	return new EmptyOperator();
+std::function<IContainer* (IContainer*)> OperatorFactory::createParentSelectionOperator() {
+	return selection::empty;
 }
 
 /*
  * Create a new replacement selection operator.
  * @return A new replacement selection operator.
  */
-Operator * OperatorFactory::createReplacementSelectionOperator(Config * config) {
-	return new EmptyOperator();
+std::function<IContainer* (IContainer*, IContainer*)> OperatorFactory::createReplacementSelectionOperator() {
+	return replacement::empty;
 }
 
 /*
  * Create a new Emmigration selection operator.
  * @return A new migration selection operator.
  */
-Operator * OperatorFactory::createEmigrationSelectionOperator(Config * config) {
-	return new EmptyOperator();
+std::function<IContainer* (IContainer*)> OperatorFactory::createEmigrationSelectionOperator() {
+	return selection::empty;
 }
 
 /*
  * Create a new Immigration selection operator.
  * @return A new migration selection operator.
  */
-Operator * OperatorFactory::createImmigrationSelectionOperator(Config * config) {
-	return new EmptyOperator();
+std::function<IContainer* (IContainer*)> OperatorFactory::createImmigrationSelectionOperator() {
+	return selection::empty;
 }

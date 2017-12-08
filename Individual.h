@@ -7,14 +7,14 @@
 #ifndef INDIVIDUAL_H_
 #define INDIVIDUAL_H_
 
-#include "Genotype.h"
+#include "GenotypeBit.h"
 using namespace std;
 
 class Individual {
-	Genotype * genotype;
-	double fitness;
+	GenotypeBit * genotype;
+
+	double _fitness;
 	bool eval;
-	bool offspring;
 public:
 	/**
 	 * create an idividual with a random genotype
@@ -24,38 +24,37 @@ public:
 	/**
 	 * create an individual with a suplied genotype
 	 */
-	Individual(Genotype * genotype);
+	Individual(GenotypeBit * genotype);
 
 	virtual ~Individual();
 
 	/**
 	 * get individual's fitness
 	 */
-	double getFitness();
+	double fitness();
 
 	/*
 	 * Set the individual fitness.
 	 */
-	void setFitness(double fitness);
+	void fitness(double fitness);
 
 
 	/**
 	 * get individual's genotype
 	 */
-	Genotype * getGenotype();
+	GenotypeBit * get_genotype();
 
 
 	bool isEvaluated();
 	void setEvaluated(bool isEvaluated);
-
-	bool isOffspring();
-	void setOffspring(bool isOffspring);
 
 
 	friend ostream& operator<< (ostream& os, Individual * in );
 	friend ostream& operator<< (ostream& os, Individual in );
 
 	friend int operator< (const Individual& id1, const Individual& id2);
+
+
 };
 
 

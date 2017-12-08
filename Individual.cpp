@@ -8,33 +8,31 @@
 #include "Individual.h"
 
 Individual::Individual(int genotype_size) {
-	Individual::genotype = new Genotype(genotype_size);
+	Individual::genotype = new GenotypeBit(genotype_size);
 	this->eval = false;
-	this->offspring = false;
-	this->fitness = 0;
+	this->_fitness = 0;
 }
 
-Individual::Individual(Genotype * genotype){
-	Individual::genotype = new Genotype( genotype->getGens() );
+Individual::Individual(GenotypeBit * genotype){
+	Individual::genotype = new GenotypeBit( genotype );
 	eval = false;
-	this->offspring = false;
-	this->fitness = 0;
+	this->_fitness = 0;
 }
 
 Individual::~Individual() {
 	delete genotype;
 }
 
-double Individual::getFitness(){
-	return fitness;
+double Individual::fitness(){
+	return _fitness;
 }
 
-void Individual::setFitness(double fitness) {
-	this->fitness = fitness;
+void Individual::fitness(double value) {
+	this->_fitness = value;
 }
 
 
-Genotype * Individual::getGenotype() {
+GenotypeBit * Individual::get_genotype() {
 	return Individual::genotype;
 }
 
@@ -48,16 +46,18 @@ void Individual::setEvaluated(bool evaluated) {
 
 
 ostream& operator<< (ostream& os, Individual * in ) {
-	os << in->getGenotype();
+	os << in->get_genotype();
 	if (in->isEvaluated())
-		os << " - fitness: "<< in->getFitness();
+		os << " - fitness: "<< in->fitness();
 	else
 		os << " ind not evaluated";
 	return os;
 }
 
 int operator< (const Individual& id1, const Individual& id2) {
-	return id1.fitness < id2.fitness;
+	return id1._fitness < id2._fitness;
 }
+
+
 
 

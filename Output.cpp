@@ -55,6 +55,12 @@ void Output::print_generation(int generation, Population* population) {
 void Output::print_final_results(Population* population) {
 	this->file << "---" << endl;
 	Individual * individual = population->best();
+	this->file << "fitness" << SEPARATOR
+				<< "total_fitness" << SEPARATOR
+				<< "mean_fitness" << SEPARATOR
+				<< "stdev_fitness" << SEPARATOR
+				<< "time" << SEPARATOR
+				<< "solution" << endl;
 	this->file << individual->fitness() << SEPARATOR
 			<< population->total_fitness() << SEPARATOR
 			<< population->mean_fitness() << SEPARATOR

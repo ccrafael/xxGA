@@ -23,10 +23,11 @@ using namespace std;
 class GA {
 	static log4cxx::LoggerPtr logger;
 
-	std::function<IContainer* (IContainer*)> parentSelection;
-	std::function<IContainer* (IContainer*)> crossover;
+	std::function<IContainer* (Population*)> parentSelection;
+	std::function<IContainer* (IContainer*, int)> crossover;
 	std::function<void (IContainer*)> mutation;
-	std::function<IContainer* (IContainer*, IContainer*)> replacementSelection;
+	std::function<IContainer* (Population*, IContainer*)> replacementSelection;
+	std::function<void (Problem*, IContainer*)> evaluation;
 
 protected:
 	Population * population;

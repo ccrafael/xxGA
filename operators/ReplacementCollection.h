@@ -9,8 +9,10 @@
 #define OPERATORS_REPLACEMENTCOLLECTION_H_
 
 #include <functional>
+#include <stdexcept>
 #include "../IContainer.h"
 #include "../Individual.h"
+#include "../Population.h"
 #include "../GenotypeBit.h"
 #include "../exception/OperatorException.h"
 #include "../Context.h"
@@ -20,19 +22,30 @@ namespace replacement {
 /**
  * Do nothing.
  */
-const std::function<IContainer*(IContainer*, IContainer*)> empty =
-		[](IContainer* p, IContainer*) {
+const std::function<IContainer*(Population*, IContainer*)> empty =
+		[](Population* p, IContainer*) {
 			return new IContainer();
 		};
 
 /**
  * Do nothing.
  */
-const std::function<IContainer*(IContainer*, IContainer*)> basic =
-		[](IContainer* p, IContainer*) {
-			return new IContainer();
+const std::function<IContainer*(Population*, IContainer*)> generational =
+		[](Population* p, IContainer*) {
+			throw runtime_error("generational model not implemented yet");
+			return nullptr;
 		};
 
-}
+const std::function<IContainer*(Population*, IContainer*)> steadystate =
+		[](Population* p, IContainer* group) {
+
+			// just add the new  individuals
+			p->add(group);
+
+			// the get the worst by fitness
+			return p->worsts(group->size());
+		};
+
+} // end namespace replacement
 
 #endif /* OPERATORS_REPLACEMENTCOLLECTION_H_ */

@@ -1,5 +1,9 @@
 *.o
 *.mk
 *.d
-/Default/
-/Debug/
+.autotools
+.cproject
+.project
+result.csv
+/.settings/
+

@@ -41,7 +41,7 @@ class Population {
 
 	Problem * problem;
 	int genesSize;
-	int size;
+	int _size;
 public:
 	/*
 	 * Population constructor. In the constructor a random population of size individuals
@@ -69,18 +69,23 @@ public:
 	 */
 	void eliminate(IContainer * individuals);
 	/*
-	 * Add a set of individuals to the current population. The individuals will be reevaluated
-	 * when they are added to the population.
+	 * Add a set of individuals to the current population.
 	 * @param individuals The set of individuals to add.
 	 */
 	void add(IContainer * individuals);
 
 	Individual * best();
 	Individual * worst();
+	IContainer * worsts(int n);
+
+	int size();
+
+	Individual * at(int i);
 
 	double mean_fitness();
 	double total_fitness();
 	double stdev_fitness();
+
 };
 
 #endif /* POPULATION_H_ */

@@ -57,13 +57,8 @@ void Island::emigration() {
 		Population * otherPopulation = (*it)->getPopulation();
 		Population * myPopulation = this->getPopulation();
 
-		IContainer * pop = otherPopulation->get_individuals();
-
-		IContainer * immigrants = this->emigrationSelection(pop);
-		IContainer * emigrants = this->emigrationSelection(pop);
-
-		// free container memory no longer needed
-		delete pop;
+		IContainer * immigrants = this->emigrationSelection(otherPopulation);
+		IContainer * emigrants = this->emigrationSelection(myPopulation);
 
 		// Exchange the the individuals between the populations
 		otherPopulation->remove(immigrants);

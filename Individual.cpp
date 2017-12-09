@@ -7,16 +7,18 @@
 
 #include "Individual.h"
 
-Individual::Individual(int genotype_size) {
+Individual::Individual(int genotype_size, int birth) {
 	Individual::genotype = new GenotypeBit(genotype_size);
 	this->eval = false;
 	this->_fitness = 0;
+	this->gen_birth = birth;
 }
 
-Individual::Individual(GenotypeBit * genotype){
+Individual::Individual(GenotypeBit * genotype, int birth){
 	Individual::genotype = new GenotypeBit( genotype );
 	eval = false;
 	this->_fitness = 0;
+	this->gen_birth = birth;
 }
 
 Individual::~Individual() {
@@ -58,6 +60,9 @@ int operator< (const Individual& id1, const Individual& id2) {
 	return id1._fitness < id2._fitness;
 }
 
+int Individual::birth() {
+	return gen_birth;
+}
 
 
 

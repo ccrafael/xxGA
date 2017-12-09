@@ -14,17 +14,18 @@ class Individual {
 	GenotypeBit * genotype;
 
 	double _fitness;
+	int gen_birth;
 	bool eval;
 public:
 	/**
 	 * create an idividual with a random genotype
 	 */
-	Individual(int genotypeSize);
+	Individual(int genotypeSize, int birth);
 
 	/**
 	 * create an individual with a suplied genotype
 	 */
-	Individual(GenotypeBit * genotype);
+	Individual(GenotypeBit * genotype, int birth);
 
 	virtual ~Individual();
 
@@ -54,6 +55,7 @@ public:
 
 	friend int operator< (const Individual& id1, const Individual& id2);
 
+	int birth();
 
 };
 

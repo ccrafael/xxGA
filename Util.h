@@ -65,8 +65,8 @@ public:
 	}
 
 	/**
-	 * obtiene size numeros aleatorios en el rango range sin
-	 * repeticiones
+	 * Get random numbers in the range [0, range) without repetitions.
+	 * return a vector of random numbers in the range [0, range) without repetitions.
 	 */
 	static vector<int> random(int range, int size) {
 		vector<int> vec;

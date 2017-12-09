@@ -15,6 +15,7 @@
 #include "operators/MutationCollection.h"
 #include "operators/ReplacementCollection.h"
 #include "operators/SelectionCollection.h"
+#include "operators/EvaluationCollection.h"
 
 /*
  * A factory used to build the operators that will be used later to apply the evolution
@@ -33,9 +34,12 @@ public:
 
 	/*
 	 * Create a new crossover operator.
-	 * @return A new cross overoperator.
+	 * @return A new cross overoperator. The function returned has the signature:
+	 *     param1 A set of parents to create offspring.
+	 *     param2 The current generation number.
+	 *     return The set of the offspring.
 	 */
-	std::function<IContainer* (IContainer*)> createCrossoverOperator();
+	std::function<IContainer* (IContainer*, int)> createCrossoverOperator();
 
 	/*
 	 * Create a new mutation operator. This method must update the individuals that are
@@ -55,7 +59,7 @@ public:
 	 *        param1 population The population.
 	 *        return A new set with the individuals selected.
 	 */
-	std::function<IContainer* (IContainer*)> createParentSelectionOperator();
+	std::function<IContainer* (Population*)> createParentSelectionOperator();
 
 	/*
 	 * Create a new replacement selection operator. This method return a set of individuals
@@ -70,19 +74,30 @@ public:
 	 *
 	 *
 	 */
-	std::function<IContainer* (IContainer*, IContainer*)> createReplacementSelectionOperator();
+	std::function<IContainer* (Population*, IContainer*)> createReplacementSelectionOperator();
 
 	/*
 	 * Create a new emigration selection operator.
 	 * @return A new migration selection operator.
 	 */
-	std::function<IContainer* (IContainer*)> createEmigrationSelectionOperator();
+	std::function<IContainer* (Population*)> createEmigrationSelectionOperator();
 
 	/*
 	 * Create a new immigration selection operator.
 	 * @return A new migration selection operator.
 	 */
-	std::function<IContainer* (IContainer*)> createImmigrationSelectionOperator();
+	std::function<IContainer* (Population*)> createImmigrationSelectionOperator();
+
+
+	/*
+	 * Create the evaluation operator. This operator must update the fitness of
+	 * each individual depending on the problem being solved.
+	 *
+	 * @return A new evaluation operator. The function returned has the signature:
+	 *     param1 The problem instance to solve.
+	 *     param2 The set of offspring to evaluate.
+	 */
+	std::function<void (Problem*, IContainer*)> createEvaluationOperator();
 
 };
 

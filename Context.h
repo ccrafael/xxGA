@@ -18,6 +18,10 @@ class Context {
 	Context(){
 		mutation_rate = 0;
 		config = nullptr;
+		num_parents = 0;
+		tournament_size = 0;
+		exchange_probability = 0.5;
+		num_migrants = 0;
 	}
 
 	Context& operator=(Context&);
@@ -30,7 +34,10 @@ public:
 
 	Config * config;
 	double mutation_rate;
-
+	unsigned short num_parents;
+	unsigned short tournament_size;
+	double exchange_probability;
+	int num_migrants;
 };
 
 

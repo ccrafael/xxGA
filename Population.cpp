@@ -9,15 +9,15 @@
 log4cxx::LoggerPtr Population::logger(log4cxx::Logger::getLogger("pupulation"));
 
 Population::Population(Problem * problem, int populationSize, int genesSize) {
-	this->size = populationSize;
+	this->_size = populationSize;
 	this->genesSize = genesSize;
 	this->problem = problem;
 
 	LOG4CXX_INFO(logger,
 			"Creating a new population of size: "<< populationSize<< " and genes size: "<<genesSize)
 	// Create a random population
-	for (int i = 0; i < size; i++) {
-		Individual * individual = new Individual(genesSize);
+	for (int i = 0; i < _size; i++) {
+		Individual * individual = new Individual(genesSize, 0);
 
 		double fitness = problem->evaluate(individual);
 		individual->fitness(fitness);
@@ -95,6 +95,12 @@ Individual* Population::worst() {
 	return (*this->individuals.begin());
 }
 
+IContainer * Population::worsts(int n) {
+	multiset<Individual*>::iterator it = individuals.begin();
+	std::advance(it, n);
+	return new IContainer(this->individuals.begin(), it);
+}
+
 double Population::mean_fitness() {
 	return total_fitness() / individuals.size();
 }
@@ -119,4 +125,15 @@ double Population::stdev_fitness() {
 	return std::sqrt(sq_sum / individuals.size());
 
 	return 0.0;
+}
+
+
+int Population::size() {
+	return _size;
+}
+
+Individual * Population::at(int i) {
+	multiset<Individual*>::iterator it = individuals.begin();
+	std::advance(it, i);
+	return *it;
 }

@@ -59,6 +59,10 @@ int main(int argc, char** argv) {
 		Context * context = Context::instance();
 		context->config = &config;
 		context->mutation_rate = config.getDouble("MutationRate");
+		context->num_parents = config.getInt("NumParents");
+		context->tournament_size = config.getInt("TournamentSize");
+		context->exchange_probability = config.getDouble("ExchangeProbability");
+		context->num_migrants = config.getInt("NumberMigrants");
 
 		LOG4CXX_INFO(logger, "Loading problem and operators.");
 

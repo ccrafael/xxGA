@@ -23,6 +23,8 @@ GA::GA(Problem * problem, OperatorFactory * operatorFactory, Config * config, Ou
 	this->replacementSelection = operatorFactory->createReplacementSelectionOperator();
 	this->mutation = operatorFactory->createMutationOperator();
 	this->crossover = operatorFactory->createCrossoverOperator();
+
+	this->evaluation = operatorFactory->createEvaluationOperator();
 }
 
 GA::~GA() {
@@ -35,23 +37,26 @@ void GA::evolve(int generations) {
 	for (int i = 0; i < generations; i++) {
 
 		LOG4CXX_DEBUG(logger, "Current population.");
-		IContainer * current_population = population->get_individuals() ;
 
 		LOG4CXX_DEBUG(logger, "Selection.");
 		// Selection
-		IContainer * parents = this->parentSelection( current_population );
+		IContainer * parents = this->parentSelection( population );
 
 		LOG4CXX_DEBUG(logger, "Crossover.");
 		// Crossover
-		IContainer * offspring = this->crossover( parents );
+		IContainer * offspring = this->crossover( parents , generation );
 
 		LOG4CXX_DEBUG(logger, "Crossover.");
+
 		// Mutation
 		this->mutation( offspring );
 
+		// Evaluation TODO how to add openCL here?
+		this->evaluation(problem, offspring);
+
 		LOG4CXX_DEBUG(logger, "Replacement.");
 		// Replacement selection
-		IContainer * notSurvivors = this->replacementSelection(current_population, offspring);
+		IContainer * notSurvivors = this->replacementSelection(population, offspring);
 
 		LOG4CXX_DEBUG(logger, "cleaning.");
 
@@ -67,7 +72,6 @@ void GA::evolve(int generations) {
 		delete parents;
 		delete offspring;
 		delete notSurvivors;
-		delete current_population;
 
 		this->generation ++;
 

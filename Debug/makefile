@@ -4,12 +4,13 @@
 
 -include ../makefile.init
 
-RM := rm
+RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
--include main/subdir.mk
--include fparser/subdir.mk
+-include problems/fparser/subdir.mk
+-include problems/subdir.mk
+-include exception/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -39,19 +40,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: GA
+all: xxGA
 
 # Tool invocations
-GA: $(OBJS) $(USER_OBJS)
+xxGA: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++  -o "GA" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++  -o "xxGA" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(CXX_DEPS)$(OBJS)$(CPP_DEPS)$(C_DEPS) GA
+	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(CXX_DEPS)$(OBJS)$(CPP_DEPS)$(C_DEPS) xxGA
 	-@echo ' '
 
 .PHONY: all clean dependents

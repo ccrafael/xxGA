@@ -27,8 +27,8 @@ using namespace std;
 class Island: public GA {
 	vector<Island *> neighborhood;
 
-	std::function<IContainer* (IContainer*)> emigrationSelection;
-	std::function<IContainer* (IContainer*)> immigrationSelection;
+	std::function<IContainer* (Population*)> emigrationSelection;
+	std::function<IContainer* (Population*)> immigrationSelection;
 
 	static log4cxx::LoggerPtr logger;
 

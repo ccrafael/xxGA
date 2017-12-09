@@ -9,14 +9,14 @@
 log4cxx::LoggerPtr Population::logger(log4cxx::Logger::getLogger("pupulation"));
 
 Population::Population(Problem * problem, int populationSize, int genesSize) {
-	this->_size = populationSize;
 	this->genesSize = genesSize;
 	this->problem = problem;
 
 	LOG4CXX_INFO(logger,
-			"Creating a new population of size: "<< populationSize<< " and genes size: "<<genesSize)
+			"Creating a new population of size: "<< populationSize<< " and genes size: "<<genesSize);
+
 	// Create a random population
-	for (int i = 0; i < _size; i++) {
+	for (int i = 0; i < populationSize; i++) {
 		Individual * individual = new Individual(genesSize, 0);
 
 		double fitness = problem->evaluate(individual);
@@ -31,7 +31,7 @@ Population::Population(Problem * problem, int populationSize, int genesSize) {
 
 Population::~Population() {
 	while (this->individuals.size() > 0) {
-		it = this->individuals.begin();
+		multiset<Individual*>::iterator it = this->individuals.begin();
 		this->individuals.erase(it);
 
 		delete *it;
@@ -46,8 +46,8 @@ IContainer * Population::get_individuals() {
 
 void required_not_null(IContainer * group, const char * msg) {
 	if (group == nullptr) {
-			throw invalid_argument(msg);
-		}
+		throw invalid_argument(msg);
+	}
 }
 /*
  * Remove fron the current population the set of individuals passed as
@@ -58,8 +58,22 @@ void required_not_null(IContainer * group, const char * msg) {
  */
 void Population::remove(IContainer * group) {
 	required_not_null(group, "null cant be removed from  population. ");
-	std::for_each(group->begin(), group->end(),
-			[this](Individual * i) {individuals.erase(i);});
+
+	// cnat remove using erase because it uses key_comp
+	// we just want to remove specific pointers
+	std::for_each(group->begin(), group->end(), [this](Individual * i) {
+
+		// fist we need to locate the exact pointer
+			pair<It, It> r = individuals.equal_range(i);
+
+			while (*r.first != i && r.first != r.second) {
+				r.first ++;
+			}
+
+			if (*r.first == i) {
+				individuals.erase(individuals.begin());
+			}
+		});
 
 }
 /*
@@ -70,8 +84,18 @@ void Population::remove(IContainer * group) {
 void Population::eliminate(IContainer * group) {
 	required_not_null(group, "null cant be eliminated from population. ");
 	std::for_each(group->begin(), group->end(), [this](Individual * i) {
-		individuals.erase(i);
-		delete i;
+		// fist we need to locate the exact pointer
+		pair<It, It> r = individuals.equal_range(i);
+
+		while (*r.first != i && r.first != r.second) {
+			r.first ++;
+		}
+
+		if (*r.first == i) {
+			individuals.erase(individuals.begin());
+			delete i;
+		}
+
 	});
 }
 /*
@@ -127,13 +151,12 @@ double Population::stdev_fitness() {
 	return 0.0;
 }
 
-
 int Population::size() {
-	return _size;
+	return individuals.size();
 }
 
 Individual * Population::at(int i) {
-	multiset<Individual*>::iterator it = individuals.begin();
+	It it = individuals.begin();
 	std::advance(it, i);
 	return *it;
 }

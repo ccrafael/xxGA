@@ -53,7 +53,6 @@ public:
 	friend ostream& operator<< (ostream& os, Individual * in );
 	friend ostream& operator<< (ostream& os, Individual in );
 
-	friend int operator< (const Individual& id1, const Individual& id2);
 
 	int birth();
 

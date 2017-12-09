@@ -23,10 +23,14 @@
 using namespace std;
 
 struct ind_comparator {
-	bool operator()(const Individual * a, const Individual * b) {
-		return a < b;
+	int operator()(Individual * a,  Individual * b) {
+		return  a->fitness() < b->fitness() ;
+
 	}
 };
+
+
+typedef multiset<Individual*>::iterator It;
 
 /*
  * Represent a population of individuals.
@@ -37,11 +41,10 @@ class Population {
 	static log4cxx::LoggerPtr logger;
 
 	multiset<Individual*, ind_comparator> individuals; //(ind_comparator);
-	multiset<Individual*>::iterator it;
+
 
 	Problem * problem;
 	int genesSize;
-	int _size;
 public:
 	/*
 	 * Population constructor. In the constructor a random population of size individuals

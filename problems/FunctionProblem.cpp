@@ -84,11 +84,15 @@ FunctionProblem::FunctionProblem(Config * config) :
 
 double FunctionProblem::evaluate(Individual * individual) {
 	std::vector<double> d = decode(individual->get_genotype());
-	double values[100];
+	double values[d.size()]={0};
+
 	for (unsigned int i = 0; i < d.size(); i++) {
 		values[i] = d.at(i);
 	}
-	return fparser.Eval(values);
+
+	// to minimize we must invert the function
+	// the algorithm is always increasing fitnesss
+	return 1/(1 + fparser.Eval(values));
 }
 
 string FunctionProblem::decode(Individual * individual) {

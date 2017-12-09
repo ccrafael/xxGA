@@ -56,10 +56,6 @@ ostream& operator<< (ostream& os, Individual * in ) {
 	return os;
 }
 
-int operator< (const Individual& id1, const Individual& id2) {
-	return id1._fitness < id2._fitness;
-}
-
 int Individual::birth() {
 	return gen_birth;
 }

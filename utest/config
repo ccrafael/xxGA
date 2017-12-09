@@ -1,16 +1,16 @@
 OutputFile = result.csv 
-ProblemFileConfig = etc/bag.conf
+ProblemFileConfig = utest/function.conf
 
 NumberIsles = 10
 
 # Number of individuals for a population into a island
-NumberIndividuals = 500
+NumberIndividuals = 5
 
 # Number of genes for each individual
-NumberGenes = 11
+NumberGenes = 10
 
 # Number of generations
-NumberGenerations = 100
+NumberGenerations = 10000
 
 # Number of generations before the migration process start
 MigrationEveryGenerations = 10
@@ -30,15 +30,18 @@ SaveDetail = 1
 # Type of encondig
 # 1: Binary encoding, Genotype(0 1 0 1) -> Phenotype(5)
 # 2: Gray encoding,   Genotype(0 1 0 1) -> Phenotype(6) (See 'GAs + Data Structures = Evolution Programs', page 99)
-EncodingType = 1
+EncodingType = 2
 
+
+# Number of individuals in the population
+IndividualsNumber = 100
 
 # Type of parent selection (method of constructing the mating pool):
 # 1: Fitness-proportional selection
 # 2: Stochastic universal sampling
 # 3: Ranking selection (linear)
 # 4: Tournament selection
-ParentSelectionType = 0
+ParentSelectionType = 4
 
 NumParents = 2
 
@@ -58,7 +61,7 @@ CrossoverType = 1
 CrossoverPointsNumber = 3
 
 # Exchange probability (just in case of Parameterized Uniform Crossover)
-ExchangeProbability = 0.5
+ExchangeProbability = 0.7
 
 # Mutation rate
 MutationRate = 0.07

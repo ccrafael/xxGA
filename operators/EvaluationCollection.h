@@ -33,6 +33,7 @@ const std::function<void(Problem*, IContainer*)> basicevaluation = [](Problem* p
 	std::for_each(g->begin(), g->end(),
 			[p](Individual * i) {
 				i->fitness(p->evaluate(i));
+				i->setEvaluated(true);
 
 			});
 

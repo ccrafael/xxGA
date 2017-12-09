@@ -8,19 +8,22 @@
 
 log4cxx::LoggerPtr GA::logger(log4cxx::Logger::getLogger("ga"));
 
-GA::GA(Problem * problem, OperatorFactory * operatorFactory, Config * config, Output * output) {
+GA::GA(Problem * problem, OperatorFactory * operatorFactory, Config * config,
+		Output * output) {
 	LOG4CXX_INFO(logger, "Creating a new GA.");
 
 	this->problem = problem;
 	this->generation = 0;
 	this->config = config;
 	this->output = output;
-	this->population = new Population(problem, config->getInt(POPULATION_SIZE_PARAM),
+	this->population = new Population(problem,
+			config->getInt(POPULATION_SIZE_PARAM),
 			config->getInt(NUMBER_OF_GENES_PARAM));
 
 	// Build the operators
 	this->parentSelection = operatorFactory->createParentSelectionOperator();
-	this->replacementSelection = operatorFactory->createReplacementSelectionOperator();
+	this->replacementSelection =
+			operatorFactory->createReplacementSelectionOperator();
 	this->mutation = operatorFactory->createMutationOperator();
 	this->crossover = operatorFactory->createCrossoverOperator();
 
@@ -36,49 +39,38 @@ void GA::evolve(int generations) {
 
 	for (int i = 0; i < generations; i++) {
 
-		LOG4CXX_DEBUG(logger, "Current population.");
-
-		LOG4CXX_DEBUG(logger, "Selection.");
 		// Selection
-		IContainer * parents = this->parentSelection( population );
+		IContainer * parents = this->parentSelection(population);
 
-		LOG4CXX_DEBUG(logger, "Crossover.");
 		// Crossover
-		IContainer * offspring = this->crossover( parents , generation );
-
-		LOG4CXX_DEBUG(logger, "Crossover.");
+		IContainer * offspring = this->crossover(parents, generation);
 
 		// Mutation
-		this->mutation( offspring );
+		this->mutation(offspring);
 
 		// Evaluation TODO how to add openCL here?
 		this->evaluation(problem, offspring);
 
-		LOG4CXX_DEBUG(logger, "Replacement.");
 		// Replacement selection
-		IContainer * notSurvivors = this->replacementSelection(population, offspring);
-
-		LOG4CXX_DEBUG(logger, "cleaning.");
+		IContainer * notSurvivors = this->replacementSelection(population,
+				offspring);
 
 		// remove the memory consumed by the removed individuals
-		this->getPopulation()->remove( notSurvivors );
-
+		this->getPopulation()->remove(notSurvivors);
 
 		// print the current status
-		this->output->print_generation(generation, population );
-
+		this->output->print_generation(generation, population);
 
 		// clean temporary containers
 		delete parents;
 		delete offspring;
 		delete notSurvivors;
 
-		this->generation ++;
+		this->generation++;
 
-		LOG4CXX_DEBUG(logger, "Generation: "<<this->generation<<" completed.");
+		LOG4CXX_DEBUG(logger, "Generation: "<<this->generation<<". Best: " << population->best());
 	}
 }
-
 
 Population * GA::getPopulation() {
 	return this->population;

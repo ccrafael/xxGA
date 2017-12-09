@@ -19,13 +19,21 @@
 #include "log4cxx/helpers/exception.h"
 
 #include "problems/FunctionProblem.h"
+#include "problems/BagProblem.h"
 #include "Problem.h"
 #include "Output.h"
 #include "Context.h"
 
+#include "utest/utests.h"
+
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 
+void usage(char** argv) {
+	cerr << " Incorrect number of arguments." << endl;
+	cout << " Usage: " << argv[0] << " log_config_file xxGA_config_file\n"
+			<< argv[0] << " tests " << endl;
+}
 /*
  * Main method.
  *
@@ -34,11 +42,15 @@ using namespace log4cxx::helpers;
  */
 int main(int argc, char** argv) {
 
+	if (argc == 2) {
+		if (string(argv[1]).compare("test") == 0) {
+			return tests_main(argc, argv);
+		}
+	}
+
 	// Simple argument control.
 	if (argc != 3) {
-		cerr << " Incorrect number of arguments." << endl;
-		cout << " Usage: " << argv[0] << " log_config_file xxGA_config_file"
-				<< endl;
+		usage(argv);
 		return 1;
 	}
 
@@ -70,7 +82,9 @@ int main(int argc, char** argv) {
 		/*
 		 * TODO create an abstraction of this to easily change the problem.
 		 */
-		FunctionProblem problem(&config);
+
+		//FunctionProblem problem(&config);
+		BagProblem problem(&config);
 
 		OperatorFactory operatorFactory(&config);
 		vector<Island*> neihgborhood;

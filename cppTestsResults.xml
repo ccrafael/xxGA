@@ -8,9 +8,12 @@
     <Test id="2">
       <Name>Population_test::test</Name>
     </Test>
+    <Test id="3">
+      <Name>OperatorFactory_test::test</Name>
+    </Test>
   </SuccessfulTests>
   <Statistics>
-    <Tests>2</Tests>
+    <Tests>3</Tests>
     <FailuresTotal>0</FailuresTotal>
     <Errors>0</Errors>
     <Failures>0</Failures>

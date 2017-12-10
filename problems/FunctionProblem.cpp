@@ -90,17 +90,22 @@ double FunctionProblem::evaluate(Individual * individual) {
 		values[i] = d.at(i);
 	}
 
+	double fitness = 1/(1 + fparser.Eval(values));
+	LOG4CXX_DEBUG(logger, " i: "<<individual<< " fitness: "<< fitness<< " "<< decode(individual));
+
 	// to minimize we must invert the function
 	// the algorithm is always increasing fitnesss
-	return 1/(1 + fparser.Eval(values));
+	return fitness;
+
 }
 
 string FunctionProblem::decode(Individual * individual) {
 	stringstream aux;
 	int offset = 0;
+	vector<bool> v = individual->get_genotype()->grayToBinary();
 	for (int i = 0; i < num_vars; i++) {
 		aux << "x" << i << ": "
-				<< dec(individual->get_genotype(), offset,
+				<< dec(v, offset,
 						configvar[i].bits, configvar[i].min, configvar[i].max,
 						configvar[i].step) << " ";
 		offset += configvar[i].bits;
@@ -115,7 +120,7 @@ FunctionProblem::~FunctionProblem() {
 /**
  * get a var value inside a genotype
  */
-double FunctionProblem::dec(GenotypeBit * gens, int offset, int bits, double min,
+double FunctionProblem::dec(vector<bool> gens, int offset, int bits, double min,
 		double max, double step) {
 	int index = Util::b2i(gens, offset, bits);
 	return (step * index) + min;
@@ -130,7 +135,7 @@ vector<double> FunctionProblem::decode(GenotypeBit * genotype) {
 	int offset = 0;
 	for (int i = 0; i < num_vars; i++) {
 		result.push_back(
-				dec(genotype, offset, configvar[i].bits,
+				dec(genotype->grayToBinary(), offset, configvar[i].bits,
 						configvar[i].min, configvar[i].max, configvar[i].step));
 		offset += configvar[i].bits;
 	}

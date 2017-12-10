@@ -58,12 +58,19 @@ void GA::evolve(int generations) {
 		// remove the memory consumed by the removed individuals
 		this->getPopulation()->remove(notSurvivors);
 
+
 		// print the current status
 		this->output->print_generation(generation, population);
 
 		// clean temporary containers
 		delete parents;
 		delete offspring;
+
+		while (notSurvivors->size() >0) {
+			Individual * i = notSurvivors->back();
+			notSurvivors->pop_back();
+			delete i;
+		}
 		delete notSurvivors;
 
 		this->generation++;

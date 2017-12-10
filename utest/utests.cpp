@@ -10,6 +10,7 @@
 #include "utests.h"
 #include "Individual_test.h"
 #include "Population_test.h"
+#include "OperatorFactory_test.h"
 
 
 using namespace CppUnit;
@@ -19,6 +20,8 @@ using namespace std;
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Individual_test);
 CPPUNIT_TEST_SUITE_REGISTRATION(Population_test);
+CPPUNIT_TEST_SUITE_REGISTRATION(OperatorFactory_test);
+
 
 int tests_main(int argc, char* argv[]) {
 	// configure a basic logger for the tests

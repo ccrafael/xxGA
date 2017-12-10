@@ -39,11 +39,13 @@ const std::function<IContainer*(Population*, IContainer*)> generational =
 const std::function<IContainer*(Population*, IContainer*)> steadystate =
 		[](Population* p, IContainer* group) {
 
+			// the get the worst by fitness
+			IContainer* toremove= p->worsts(group->size());
+
 			// just add the new  individuals
 			p->add(group);
 
-			// the get the worst by fitness
-			return p->worsts(group->size());
+			return toremove;
 		};
 
 } // end namespace replacement

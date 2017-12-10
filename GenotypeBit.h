@@ -40,6 +40,16 @@ public:
 
 	int size();
 
+	/*
+	 * Return the internal representation, supposed to be on gray to binary.
+	 */
+	vector<bool> grayToBinary();
+
+	/*
+	 * Flip the internal representation from binary to gray.
+	 */
+	void binaryToGray();
+
 	friend ostream & operator<< (ostream& os,GenotypeBit g);
 	friend ostream & operator<< (ostream& os,GenotypeBit * g);
 

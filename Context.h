@@ -16,12 +16,12 @@
  */
 class Context {
 	Context(){
-		mutation_rate = 0;
+		mutation_rate = 0.5;
 		config = nullptr;
-		num_parents = 0;
-		tournament_size = 0;
+		num_parents = 2;
+		tournament_size = 10;
 		exchange_probability = 0.5;
-		num_migrants = 0;
+		num_migrants = 5;
 	}
 
 	Context& operator=(Context&);

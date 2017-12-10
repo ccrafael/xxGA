@@ -83,8 +83,8 @@ int main(int argc, char** argv) {
 		 * TODO create an abstraction of this to easily change the problem.
 		 */
 
-		//FunctionProblem problem(&config);
-		BagProblem problem(&config);
+		FunctionProblem problem(&config);
+		//BagProblem problem(&config);
 
 		OperatorFactory operatorFactory(&config);
 		vector<Island*> neihgborhood;

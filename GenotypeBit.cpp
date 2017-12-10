@@ -10,14 +10,13 @@
 
 using namespace std;
 
-
 GenotypeBit::GenotypeBit() {
 	//Empty
 }
 
 GenotypeBit::GenotypeBit(int size) {
-	for (int i = 0; i < size; i ++) {
-		genotype.push_back( 0 == Util::rand(2) );
+	for (int i = 0; i < size; i++) {
+		genotype.push_back(0 == Util::rand(2));
 	}
 }
 
@@ -43,17 +42,40 @@ int GenotypeBit::size() {
 	return GenotypeBit::genotype.size();
 }
 
-ostream & operator<< (ostream & os, GenotypeBit g){
+vector<bool> GenotypeBit::grayToBinary() {
+	vector<bool> binary = genotype;
+	for (unsigned int i = 1; i < genotype.size(); i++) {
+		if (!genotype[i]) {
+			binary[i] = binary[i-1];
+		} else {
+			binary[i] = !binary[i-1];
+		}
+
+	}
+	return binary;
+}
+
+
+void GenotypeBit::binaryToGray() {
+	vector<bool> gray = genotype;
+	for (unsigned int i = 1; i < genotype.size(); i++) {
+		gray[i] = !(genotype[i-1] == genotype[i]);
+	}
+	genotype = gray;
+
+}
+
+ostream & operator<<(ostream & os, GenotypeBit g) {
 	for (int i = 0; i < g.size(); i++) {
-		os << g.at(i) ;
+		os << g.at(i);
 	}
 	return os;
 }
 
-ostream & operator<< (ostream & os, GenotypeBit * g) {
+ostream & operator<<(ostream & os, GenotypeBit * g) {
 	if (g != NULL) {
 		for (int i = 0; i < g->size(); i++) {
-			os << g->at(i) ;
+			os << g->at(i);
 		}
 	} else {
 		os << "null";

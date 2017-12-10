@@ -46,7 +46,7 @@ class FunctionProblem: public Problem {
 	 * @param step The precission of the variable it is (max -min)/pow(2, bits). Where bits = NumberGenes/numvars.
 	 * @return The double representation of the  variable that start in offset position.
 	 */
-	double dec(GenotypeBit * gens, int offset, int bits, double min, double max,
+	double dec(vector<bool> gens, int offset, int bits, double min, double max,
 			double step);
 	/*
 	 * Convenience mehtod to convert from the genotype space to the phenotype space.

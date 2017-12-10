@@ -85,6 +85,14 @@ void Population_test::test(void) {
 	genotype->push_back(true);
 	genotype->push_back(true);
 
+	cout << " genotype binary: " << genotype<< endl;
+	// flip the genotype to gray
+	genotype->binaryToGray();
+
+	cout << " genotype gray:   " << genotype<< endl;
+
+	vector<bool> g = genotype->grayToBinary();
+	std::for_each(g.begin(), g.end(), [](bool b){cout << (b?"1":"0");});
 	Individual * i = new Individual(genotype, 0);
 
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(problem->evaluate(i), 0.00513479, 0.0000001);
@@ -104,6 +112,10 @@ void Population_test::test(void) {
 	genotype->push_back(true);
 	genotype->push_back(true);
 	genotype->push_back(true); // 00101 -> 21.855 for (0,100)
+
+	// flip the genotype to gray
+	genotype->binaryToGray();
+
 	i = new Individual(genotype, 0);
 
 	cout << problem->evaluate(i);
@@ -139,7 +151,7 @@ void Population_test::test(void) {
 	CPPUNIT_ASSERT_EQUAL(worsts->at(0)->fitness(), pop->at(0)->fitness());
 	CPPUNIT_ASSERT_EQUAL(worsts->at(1)->fitness(), pop->at(1)->fitness());
 
-	pop->eliminate(worsts);
+	pop->remove(worsts);
 	CPPUNIT_ASSERT_EQUAL(3, pop->size());
 
 	CPPUNIT_ASSERT(worsts->at(0) != pop->at(0));
@@ -149,6 +161,13 @@ void Population_test::test(void) {
 	CPPUNIT_ASSERT(worsts->at(1) != pop->at(0));
 	CPPUNIT_ASSERT(worsts->at(1) != pop->at(1));
 	CPPUNIT_ASSERT(worsts->at(1) != pop->at(2));
+
+	while (worsts->size() >0) {
+				Individual * i = worsts->back();
+				worsts->pop_back();
+				delete i;
+			}
+
 	delete worsts;
 
 }

@@ -65,12 +65,7 @@ public:
 	 * @param individuals The set of individuals to remove from population.
 	 */
 	void remove(IContainer * individuals);
-	/*
-	 * The same than remove method but the individuals  memory are liberated.
-	 * @param individuals The set of individuals to completely remove from population
-	 * and free its memory.
-	 */
-	void eliminate(IContainer * individuals);
+
 	/*
 	 * Add a set of individuals to the current population.
 	 * @param individuals The set of individuals to add.

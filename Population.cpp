@@ -71,33 +71,12 @@ void Population::remove(IContainer * group) {
 			}
 
 			if (*r.first == i) {
-				individuals.erase(individuals.begin());
+				individuals.erase(r.first);
 			}
 		});
 
 }
-/*
- * The same than remove method but the individuals  memory are liberated.
- * @param individuals The set of individuals to completely remove from population
- * and free its memory.
- */
-void Population::eliminate(IContainer * group) {
-	required_not_null(group, "null cant be eliminated from population. ");
-	std::for_each(group->begin(), group->end(), [this](Individual * i) {
-		// fist we need to locate the exact pointer
-		pair<It, It> r = individuals.equal_range(i);
 
-		while (*r.first != i && r.first != r.second) {
-			r.first ++;
-		}
-
-		if (*r.first == i) {
-			individuals.erase(individuals.begin());
-			delete i;
-		}
-
-	});
-}
 /*
  * Add a set of individuals to the current population. The individuals will be reevaluated
  * when they are added to the population.

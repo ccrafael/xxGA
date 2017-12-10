@@ -48,11 +48,17 @@ double BagProblem::evaluate(Individual * individual) {
 	GenotypeBit* g = individual->get_genotype();
 
 	double sum = 0;
-
+	double count = 0;
 	for (int i = 0; i < g->size(); i++) {
 		sum += g->at(i) ? bins.at(i) : 0;
+		count += g->at(i)?1:0;
 	}
-	double fitness =  1/(1+pow(max_size - sum, 2)) ;
+	double penalty = 1;
+	if (sum > max_size) {
+		penalty = pow(10, max_size - sum);
+	}
+
+	double fitness =  (1/(1+pow(max_size - sum, 2))) * count * penalty ;
 
 	LOG4CXX_DEBUG(logger, " evaluating: "<< individual<<" sum: "<<sum<<" fitness: "<<fitness);
 	return fitness;
@@ -62,13 +68,13 @@ string BagProblem::decode(Individual * individual) {
 	stringstream aux;
 
 	GenotypeBit* g = individual->get_genotype();
-
+	aux<<"[";
 	for (int i = 0; i < g->size(); i++) {
 		if (g->at(i)) {
 			aux<< bins.at(i)<<" ";
 		}
 	}
-
+	aux<<"]";
 	return aux.str();
 }
 

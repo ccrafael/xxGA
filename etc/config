@@ -1,19 +1,22 @@
 OutputFile = result.csv 
-ProblemFileConfig = etc/bag.conf
+
+
+//ProblemFileConfig = etc/bag.conf
+ProblemFileConfig = etc/function.conf
 
 NumberIsles = 10
 
 # Number of individuals for a population into a island
-NumberIndividuals = 500
+NumberIndividuals = 1000
 
 # Number of genes for each individual
-NumberGenes = 11
+NumberGenes = 30
 
 # Number of generations
-NumberGenerations = 100
+NumberGenerations = 1000
 
 # Number of generations before the migration process start
-MigrationEveryGenerations = 10
+MigrationEveryGenerations = 100
 
 # Migration type
 # 1: Select NumberMigrants randomly
@@ -26,19 +29,13 @@ NumberMigrants = 5
 # Save the statictis for each generation
 SaveDetail = 1
 
-
-# Type of encondig
-# 1: Binary encoding, Genotype(0 1 0 1) -> Phenotype(5)
-# 2: Gray encoding,   Genotype(0 1 0 1) -> Phenotype(6) (See 'GAs + Data Structures = Evolution Programs', page 99)
-EncodingType = 1
-
-
 # Type of parent selection (method of constructing the mating pool):
+#  0: basic seleccion (two parents randomly 
 # 1: Fitness-proportional selection
 # 2: Stochastic universal sampling
 # 3: Ranking selection (linear)
 # 4: Tournament selection
-ParentSelectionType = 0
+ParentSelectionType = 4
 
 NumParents = 2
 
@@ -46,7 +43,7 @@ NumParents = 2
 ExpectedOffspringNumberForFittestIndividual = 2
 
 # Tournament size (just in case of tournament selection). Range: [2,IndividualsNumber].
-TournamentSize = 10
+TournamentSize = 5
 
 # Type of crossover:
 # 1: One-point crossover
@@ -68,10 +65,6 @@ MutationRate = 0.07
 # 2: Steady state model
 SurvivorSelectionType = 2
 
-# Elistism (just in case of generational model for survivor selection)
-# 1: ON
-# 2: OFF
-Elitism = 1
 
 # Generational gap (just in case of steady state model for survivor selection). Range: [1, IndividualsNumber].
 GenerationalGap = 29

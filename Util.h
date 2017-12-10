@@ -53,11 +53,11 @@ public:
 		return (Util::rand() <= rate);
 	}
 
-	static int b2i(GenotypeBit * array, int offset, int length) {
+	static int b2i(vector<bool> array, int offset, int length) {
 		int valor = 0;
 		int potencia = 1;
 		for (int i = length + offset - 1; i >= offset; i--) {
-			int bit = array->at(i)?1:0;
+			int bit = array[i]?1:0;
 			valor += bit * potencia;
 			potencia *= 2;
 		}

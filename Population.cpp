@@ -8,25 +8,7 @@
 
 log4cxx::LoggerPtr Population::logger(log4cxx::Logger::getLogger("pupulation"));
 
-Population::Population(Problem * problem, int populationSize, int genesSize) {
-	this->genesSize = genesSize;
-	this->problem = problem;
-
-	LOG4CXX_INFO(logger,
-			"Creating a new population of size: "<< populationSize<< " and genes size: "<<genesSize);
-
-	// Create a random population
-	for (int i = 0; i < populationSize; i++) {
-		Individual * individual = new Individual(genesSize, 0);
-
-		double fitness = problem->evaluate(individual);
-		individual->fitness(fitness);
-		individual->setEvaluated(true);
-
-		this->individuals.insert(individual);
-	}
-
-	LOG4CXX_DEBUG(logger, " Population initialized. ");
+Population::Population() {
 }
 
 Population::~Population() {

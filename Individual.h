@@ -54,6 +54,7 @@ public:
 	friend ostream& operator<< (ostream& os, Individual in );
 
 
+
 	int birth();
 
 };

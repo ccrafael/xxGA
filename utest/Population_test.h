@@ -14,6 +14,7 @@
 #include "../problems/FunctionProblem.h"
 #include "../Population.h"
 #include "../GenotypeBit.h"
+#include "../ga.h"
 
 /*
  * A unit test for Population and all its dependencies, therefore
@@ -43,10 +44,10 @@ private:
 void Population_test::test(void) {
 
 	CPPUNIT_ASSERT(nullptr != pop);
-	CPPUNIT_ASSERT(5 == pop->size());
+	CPPUNIT_ASSERT(10 == pop->size());
 
 	IContainer * ind = pop->get_individuals();
-	CPPUNIT_ASSERT(5 == ind->size());
+	CPPUNIT_ASSERT(10 == ind->size());
 
 	Individual * worst = pop->worst();
 	Individual * best = pop->best();
@@ -61,7 +62,7 @@ void Population_test::test(void) {
 	CPPUNIT_ASSERT(worst->fitness() <= best->fitness());
 
 	CPPUNIT_ASSERT_EQUAL(worst, pop->at(0));
-	CPPUNIT_ASSERT_EQUAL(best, pop->at(4));
+	CPPUNIT_ASSERT_EQUAL(best, pop->at(9));
 
 	delete ind;
 
@@ -85,14 +86,14 @@ void Population_test::test(void) {
 	genotype->push_back(true);
 	genotype->push_back(true);
 
-	cout << " genotype binary: " << genotype<< endl;
+	cout << " genotype binary: " << genotype << endl;
 	// flip the genotype to gray
 	genotype->binaryToGray();
 
-	cout << " genotype gray:   " << genotype<< endl;
+	cout << " genotype gray:   " << genotype << endl;
 
 	vector<bool> g = genotype->grayToBinary();
-	std::for_each(g.begin(), g.end(), [](bool b){cout << (b?"1":"0");});
+	std::for_each(g.begin(), g.end(), [](bool b) {cout << (b?"1":"0");});
 	Individual * i = new Individual(genotype, 0);
 
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(problem->evaluate(i), 0.00513479, 0.0000001);
@@ -133,7 +134,7 @@ void Population_test::test(void) {
 	});
 	pop->remove(worsts);
 
-	CPPUNIT_ASSERT_EQUAL(3, pop->size());
+	CPPUNIT_ASSERT_EQUAL(8, pop->size());
 
 	CPPUNIT_ASSERT(worsts->at(0) != pop->at(0));
 	CPPUNIT_ASSERT(worsts->at(0) != pop->at(1));
@@ -145,28 +146,19 @@ void Population_test::test(void) {
 
 	pop->add(worsts);
 
-	CPPUNIT_ASSERT_EQUAL(5, pop->size());
+	CPPUNIT_ASSERT_EQUAL(10, pop->size());
 
 	// be careful for equivalent objects the order of pointers can be different
 	CPPUNIT_ASSERT_EQUAL(worsts->at(0)->fitness(), pop->at(0)->fitness());
 	CPPUNIT_ASSERT_EQUAL(worsts->at(1)->fitness(), pop->at(1)->fitness());
 
 	pop->remove(worsts);
-	CPPUNIT_ASSERT_EQUAL(3, pop->size());
 
-	CPPUNIT_ASSERT(worsts->at(0) != pop->at(0));
-	CPPUNIT_ASSERT(worsts->at(0) != pop->at(1));
-	CPPUNIT_ASSERT(worsts->at(0) != pop->at(2));
-
-	CPPUNIT_ASSERT(worsts->at(1) != pop->at(0));
-	CPPUNIT_ASSERT(worsts->at(1) != pop->at(1));
-	CPPUNIT_ASSERT(worsts->at(1) != pop->at(2));
-
-	while (worsts->size() >0) {
-				Individual * i = worsts->back();
-				worsts->pop_back();
-				delete i;
-			}
+	while (worsts->size() > 0) {
+		Individual * i = worsts->back();
+		worsts->pop_back();
+		delete i;
+	}
 
 	delete worsts;
 
@@ -175,8 +167,21 @@ void Population_test::test(void) {
 void Population_test::setUp(void) {
 	config = new Config(string("utest/config"));
 	problem = new FunctionProblem(config);
-	pop = new Population(problem, config->getInt("NumberIndividuals"),
-			config->getInt("NumberGenes"));
+	pop = new Population();
+	int num_individuals = config->getInt(GA::POPULATION_SIZE_PARAM);
+	int num_genes = config->getInt(GA::NUMBER_OF_GENES_PARAM);
+	IContainer * individuals = new IContainer();
+
+	for (int i = 0; i < num_individuals; i++) {
+		Individual * ind = new Individual(num_genes, 0);
+		ind->fitness(problem->evaluate(ind));
+		ind->setEvaluated(true);
+
+		individuals->push_back(ind);
+	}
+
+	pop->add(individuals);
+	delete individuals;
 }
 
 void Population_test::tearDown(void) {

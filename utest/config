@@ -4,7 +4,7 @@ ProblemFileConfig = utest/function.conf
 NumberIsles = 10
 
 # Number of individuals for a population into a island
-NumberIndividuals = 5
+NumberIndividuals = 10
 
 # Number of genes for each individual
 NumberGenes = 10

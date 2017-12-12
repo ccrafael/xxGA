@@ -4,10 +4,8 @@
  *  Created on: 10-dic-2008
  *      Author: rafael
  */
-#include "Util.h"
-#include "Island.h"
-#include "exception/ConfigurationException.h"
 
+#include <thread>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -17,6 +15,10 @@
 #include "log4cxx/logger.h"
 #include "log4cxx/propertyconfigurator.h"
 #include "log4cxx/helpers/exception.h"
+
+#include "Util.h"
+#include "Island.h"
+#include "exception/ConfigurationException.h"
 
 #include "problems/FunctionProblem.h"
 #include "problems/BagProblem.h"
@@ -83,13 +85,12 @@ int main(int argc, char** argv) {
 		 * TODO create an abstraction of this to easily change the problem.
 		 */
 
-		FunctionProblem problem(&config);
-		//BagProblem problem(&config);
+		Problem * problem = new FunctionProblem(&config);
+		//Problem *  proble = new BagProblem(&config);
 
 		OperatorFactory operatorFactory(&config);
-		vector<Island*> neihgborhood;
 
-		Output output(&problem, &config);
+		Output output(problem, &config);
 
 		// print the header
 		output.print_header();
@@ -101,21 +102,67 @@ int main(int argc, char** argv) {
 
 		LOG4CXX_INFO(logger, "Creating islands.");
 
-		// Create the islands
-		Island island(&problem, &operatorFactory, &config, &output,
-				neihgborhood);
+		int num_islands = config.getInt("NumberIsles");
 
-		LOG4CXX_INFO(logger, "Evolving.");
+		std::vector<Island *> islands;
 
-		// All the interesting things happen here.
-		island.evolveIsland();
+		// vector container stores threads
+		std::vector<std::thread> workers;
+
+		for (int i = 0; i < num_islands; i++) {
+			Island * island = new Island(i, problem, &operatorFactory, &config,
+					&output, num_islands);
+			islands.push_back(island);
+		}
+
+		// this connect all the islands as a ring
+		for (int i = 0; i < num_islands; i++) {
+			vector<Island*> neihgborhood;
+			int left = i > 0?i - 1: num_islands -1;
+			int right = i < num_islands-1?i + 1: 0;
+
+			neihgborhood.push_back(islands[left]);
+			neihgborhood.push_back(islands[right]);
+			islands[i]->set_neighborhood(neihgborhood);
+		}
+
+		// Create the num_islands islands and start the evolution into it
+		for (int i = 0; i < num_islands; i++) {
+			workers.push_back(std::thread([i, islands, logger]() {
+
+				islands[i]->init();
+
+				LOG4CXX_INFO(logger, "Evolving island "<<i<<".");
+
+				// All the interesting things happen here.
+				islands[i]->evolveIsland();
+
+				}));
+
+		}
+
+		// wait for the threads
+		std::for_each(workers.begin(), workers.end(), [](std::thread &t) {
+			t.join();
+		});
 
 		// stop the timer
 		output.stop();
 
 		// print the final statistics and the results
 		// all will be written to the file specified in the configuration file.
-		output.print_final_results(island.getPopulation());
+		Individual * better = nullptr;
+		std::for_each(islands.begin(), islands.end(),
+				[&output, &better](Island* i) {
+					Population * population = i->getPopulation();
+					output.print_final_results(population);
+					Individual * best = i->best();
+					if (better == nullptr || better->fitness() < best->fitness()) {
+						better = best;
+					}
+				});
+
+		output.print(better);
 
 	} catch (ConfigurationException &e) {
 		LOG4CXX_ERROR(logger, " Error loading configuration: "<<e.getMsg());

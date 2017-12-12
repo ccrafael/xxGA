@@ -91,7 +91,7 @@ double FunctionProblem::evaluate(Individual * individual) {
 	}
 
 	double fitness = 1/(1 + fparser.Eval(values));
-	LOG4CXX_DEBUG(logger, " i: "<<individual<< " fitness: "<< fitness<< " "<< decode(individual));
+	LOG4CXX_TRACE(logger, " i: "<<individual<< " fitness: "<< fitness<< " "<< decode(individual));
 
 	// to minimize we must invert the function
 	// the algorithm is always increasing fitnesss

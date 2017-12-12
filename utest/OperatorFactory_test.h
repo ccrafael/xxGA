@@ -18,6 +18,7 @@
 #include "../Config.h"
 #include "../IContainer.h"
 #include "../Context.h"
+#include "../ga.h"
 
 /*
  * A unit test for Individual and genotypebit.
@@ -48,15 +49,16 @@ private:
 
 void OperatorFactory_test::test(void) {
 
-	cout << " select the parents "<< endl;
+	cout << " select the parents " << endl;
 	std::function<IContainer* (Population*)> parentselection =
 			factory->createParentSelectionOperator();
+
 	IContainer * parents = parentselection(population);
 
 	CPPUNIT_ASSERT(parents != nullptr);
 	CPPUNIT_ASSERT_EQUAL(2, (int )parents->size());
 
-	cout << " perform crossover "<< endl;
+	cout << " perform crossover " << endl;
 
 	std::function<IContainer* (IContainer*, int)> crossoverop =
 			factory->createCrossoverOperator();
@@ -68,7 +70,7 @@ void OperatorFactory_test::test(void) {
 	for_each(offspring->begin(), offspring->end(),
 			[this,parents](Individual *i) {
 				CPPUNIT_ASSERT_EQUAL(1, i->birth());
-				CPPUNIT_ASSERT_EQUAL(5, i->get_genotype()->size());
+				CPPUNIT_ASSERT_EQUAL(10, i->get_genotype()->size());
 				CPPUNIT_ASSERT_EQUAL(false, i->isEvaluated());
 				CPPUNIT_ASSERT(i != parents->at(0));
 				CPPUNIT_ASSERT(i != parents->at(1));
@@ -83,47 +85,49 @@ void OperatorFactory_test::test(void) {
 	for_each(offspring->begin(), offspring->end(),
 			[this,parents](Individual *i) {
 				CPPUNIT_ASSERT_EQUAL(1, i->birth());
-				CPPUNIT_ASSERT_EQUAL(5, i->get_genotype()->size());
+				CPPUNIT_ASSERT_EQUAL(10, i->get_genotype()->size());
 				CPPUNIT_ASSERT_EQUAL(false, i->isEvaluated());
 				CPPUNIT_ASSERT(i != parents->at(0));
 				CPPUNIT_ASSERT(i != parents->at(1));
 			});
 
-	std::function<void (Problem*, IContainer*)> eval = factory->createEvaluationOperator();
+	std::function<void(Problem*, IContainer*)> eval =
+			factory->createEvaluationOperator();
 	eval(problem, offspring);
 
 	for_each(offspring->begin(), offspring->end(),
 			[this,parents](Individual *i) {
 				CPPUNIT_ASSERT_EQUAL(1, i->birth());
-				CPPUNIT_ASSERT_EQUAL(5, i->get_genotype()->size());
+				CPPUNIT_ASSERT_EQUAL(10, i->get_genotype()->size());
 				CPPUNIT_ASSERT_EQUAL(true, i->isEvaluated());
 				CPPUNIT_ASSERT(i != parents->at(0));
 				CPPUNIT_ASSERT(i != parents->at(1));
 			});
 
-	std::function<IContainer* (Population*, IContainer*)> re = factory->createReplacementSelectionOperator();
+	std::function<IContainer* (Population*, IContainer*)> re =
+			factory->createReplacementSelectionOperator();
 
 	IContainer * discard = re(population, offspring);
-	CPPUNIT_ASSERT_EQUAL(2, (int)discard->size());
+	CPPUNIT_ASSERT_EQUAL(2, (int )discard->size());
 	CPPUNIT_ASSERT_EQUAL(12, population->size());
-	for_each(discard->begin(), discard->end(),
-				[this,offspring](Individual *i) {
-					CPPUNIT_ASSERT_EQUAL(0, i->birth());
-					CPPUNIT_ASSERT_EQUAL(5, i->get_genotype()->size());
-					CPPUNIT_ASSERT_EQUAL(true, i->isEvaluated());
-					CPPUNIT_ASSERT(i != offspring->at(0));
-					CPPUNIT_ASSERT(i != offspring->at(1));
-				});
+	for_each(discard->begin(), discard->end(), [this,offspring](Individual *i) {
+		CPPUNIT_ASSERT_EQUAL(0, i->birth());
+		CPPUNIT_ASSERT_EQUAL(10, i->get_genotype()->size());
+		CPPUNIT_ASSERT_EQUAL(true, i->isEvaluated());
+		CPPUNIT_ASSERT(i != offspring->at(0));
+		CPPUNIT_ASSERT(i != offspring->at(1));
+	});
 
 	population->remove(discard);
 
-	for_each(discard->begin(), discard->end(),[](Individual *i) {cout << i <<endl;});
+	for_each(discard->begin(), discard->end(),
+			[](Individual *i) {cout << i <<endl;});
 
-	while (discard->size() >0) {
-				Individual * i = discard->back();
-				discard->pop_back();
-				delete i;
-			}
+	while (discard->size() > 0) {
+		Individual * i = discard->back();
+		discard->pop_back();
+		delete i;
+	}
 
 	delete discard;
 	delete offspring;
@@ -140,8 +144,25 @@ void OperatorFactory_test::setUp(void) {
 
 	problem = new FunctionProblem(config);
 	factory = new OperatorFactory(config);
-	population = new Population(problem, 10, 5);
+	population = new Population();
 
+
+	IContainer * individuals = new IContainer();
+
+	int num_individuals = config->getInt(GA::POPULATION_SIZE_PARAM);
+	int num_genes = config->getInt(GA::NUMBER_OF_GENES_PARAM);
+
+	for (int i = 0; i < num_individuals; i++) {
+		Individual * ind = new Individual(num_genes, 0);
+		ind->fitness(problem->evaluate(ind));
+		ind->setEvaluated(true);
+
+		individuals->push_back(ind);
+	}
+
+	population->add(individuals);
+
+	delete individuals;
 }
 
 void OperatorFactory_test::tearDown(void) {

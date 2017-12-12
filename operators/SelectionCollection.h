@@ -44,9 +44,14 @@ const std::function<IContainer* (Population*)> tournament =
 		[](Population* pop) {
 			IContainer * container = new IContainer();
 			Context * context = Context::instance();
+			int pop_size = (int)pop->size();
+
+			if (context->num_parents > pop->size()) {
+				throw invalid_argument("Pop size is smaller than tournament size");
+			}
 
 			while (container->size() < context->num_parents) {
-				vector<int> tournament = Util::random((int)pop->size(), context->tournament_size);
+				vector<int> tournament = Util::random(pop_size, context->tournament_size);
 
 				// the best is the biggest because population is ordered by fitness
 				int selected = *std::max_element(tournament.begin(),tournament.end());

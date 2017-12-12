@@ -1,22 +1,23 @@
-OutputFile = result.csv 
+OutputGenerationFile = /dev/shm/generation.csv
+OutputSolutionFile = /dev/shm/solution.csv 
 
 
 //ProblemFileConfig = etc/bag.conf
 ProblemFileConfig = etc/function.conf
 
-NumberIsles = 10
+NumberIsles = 10 
 
 # Number of individuals for a population into a island
 NumberIndividuals = 1000
 
 # Number of genes for each individual
-NumberGenes = 30
+NumberGenes = 80
 
 # Number of generations
-NumberGenerations = 1000
+NumberGenerations = 1000000
 
 # Number of generations before the migration process start
-MigrationEveryGenerations = 100
+MigrationEveryGenerations = 10000
 
 # Migration type
 # 1: Select NumberMigrants randomly

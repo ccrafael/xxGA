@@ -8,6 +8,7 @@
 #define GENETICALGORITHM_H_
 
 #include <functional>
+#include <stdexcept>
 #include "log4cxx/logger.h"
 #include "OperatorFactory.h"
 #include "Config.h"
@@ -25,9 +26,9 @@ class GA {
 
 	std::function<IContainer* (Population*)> parentSelection;
 	std::function<IContainer* (IContainer*, int)> crossover;
-	std::function<void (IContainer*)> mutation;
+	std::function<void(IContainer*)> mutation;
 	std::function<IContainer* (Population*, IContainer*)> replacementSelection;
-	std::function<void (Problem*, IContainer*)> evaluation;
+	std::function<void(Problem*, IContainer*)> evaluation;
 
 protected:
 	Population * population;
@@ -37,12 +38,9 @@ protected:
 
 	int generation;
 
-	static constexpr const char* NUMBER_OF_GENES_PARAM = "NumberGenes";
-	static constexpr const char* POPULATION_SIZE_PARAM = "NumberIndividuals";
-
-
 public:
-	GA(Problem * problem, OperatorFactory * operatorFactory, Config * config, Output * output);
+	GA(Problem * problem, OperatorFactory * operatorFactory, Config * config,
+			Output * output);
 	virtual ~GA();
 
 	/*
@@ -50,6 +48,12 @@ public:
 	 * @param generations The number of generations that the algorithm will be runned.
 	 */
 	void evolve(int generations);
+
+	/*
+	 * Init the population.
+	 */
+	void init();
+
 
 	/*
 	 * Get a reference to the current population.
@@ -64,6 +68,8 @@ public:
 	double total_fitness();
 	double stdev_fitness();
 
+	static constexpr const char* NUMBER_OF_GENES_PARAM = "NumberGenes";
+	static constexpr const char* POPULATION_SIZE_PARAM = "NumberIndividuals";
 };
 
 #endif /* GENETICALGORITHM_H_ */

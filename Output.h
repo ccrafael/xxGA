@@ -14,8 +14,10 @@
 #include <thread>
 #include <mutex>
 #include <ctime>
+#include <vector>
 #include "Config.h"
 #include "Population.h"
+#include "Individual.h"
 
 using namespace std;
 
@@ -30,9 +32,10 @@ using namespace std;
 class Output {
 	Config * config;
 	Problem * problem;
-	ofstream file;
+	ofstream generation_file;
+	ofstream  solution_file;
 	bool detail;
-	std::mutex mutex;
+	std::mutex m;
 	static constexpr const char* SEPARATOR = ",";
 	unsigned t0, t1;
 
@@ -55,7 +58,9 @@ public:
 	 * bestfitness, totalfitness, meanfitness, fitness_stdev, time, solution
 	 *
 	 */
-	void print_final_results(Population * island);
+	void print_final_results(Population * population);
+
+	void print(Individual * individual);
 
 	/*
 	 * prints the header info.

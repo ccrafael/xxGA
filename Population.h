@@ -42,17 +42,11 @@ class Population {
 
 	multiset<Individual*, ind_comparator> individuals; //(ind_comparator);
 
-
-	Problem * problem;
-	int genesSize;
 public:
 	/*
-	 * Population constructor. In the constructor a random population of size individuals
-	 * is created.
-	 * @param The size of the population.
-	 * @param The size of the genotype.
+	 * Population constructor.
 	 */
-	Population(Problem * problem, int size, int genesSize);
+	Population();
 	virtual ~Population();
 
 	IContainer * get_individuals();

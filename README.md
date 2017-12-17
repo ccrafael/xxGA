@@ -16,6 +16,11 @@ Logging https://logging.apache.org/log4cxx/latest_stable/:
 ```
 apt-get install liblog4cxx-dev 
 ```
+The project uses C++14:
+https://gcc.gnu.org/gcc-6/changes.html
+
+It was created with:
+gcc (Debian 6.4.0-1) 6.4.0 20170704
 
 ## Compile
 

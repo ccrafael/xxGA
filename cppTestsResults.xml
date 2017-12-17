@@ -3,17 +3,23 @@
   <FailedTests></FailedTests>
   <SuccessfulTests>
     <Test id="1">
-      <Name>Individual_test::test</Name>
+      <Name>Util_test::test</Name>
     </Test>
     <Test id="2">
-      <Name>Population_test::test</Name>
+      <Name>Functions_test::test</Name>
     </Test>
     <Test id="3">
       <Name>OperatorFactory_test::test</Name>
     </Test>
+    <Test id="4">
+      <Name>Population_test::test</Name>
+    </Test>
+    <Test id="5">
+      <Name>Individual_test::test</Name>
+    </Test>
   </SuccessfulTests>
   <Statistics>
-    <Tests>3</Tests>
+    <Tests>5</Tests>
     <FailuresTotal>0</FailuresTotal>
     <Errors>0</Errors>
     <Failures>0</Failures>

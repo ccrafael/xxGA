@@ -69,6 +69,7 @@ public:
 	Individual * best();
 	Individual * worst();
 	IContainer * worsts(int n);
+	IContainer * bests(int n);
 
 	int size();
 
@@ -76,7 +77,7 @@ public:
 
 	double mean_fitness();
 	double total_fitness();
-	double stdev_fitness();
+	double stdev_fitness(double mean);
 
 };
 

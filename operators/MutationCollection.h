@@ -38,7 +38,6 @@ const std::function<void(IContainer*)> basic = [](IContainer* g) {
 						gn->set(i, !gn->at(i));
 					}
 				}
-
 			});
 
 };

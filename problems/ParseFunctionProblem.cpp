@@ -1,5 +1,3 @@
-#include "FunctionProblem.h"
-
 #include <log4cxx/helpers/messagebuffer.h>
 #include <cmath>
 #include <sstream>
@@ -10,13 +8,14 @@
 #include "../GenotypeNumber.h"
 #include "../Individual.h"
 #include "../Util.h"
+#include "ParseFunctionProblem.h"
 
 using namespace std;
 
-log4cxx::LoggerPtr FunctionProblem::plogger(
-		log4cxx::Logger::getLogger("functionProblem"));
+log4cxx::LoggerPtr ParseFunctionProblem::plogger(
+		log4cxx::Logger::getLogger("parseFunctionProblem"));
 
-FunctionProblem::FunctionProblem(Config * config) :
+ParseFunctionProblem::ParseFunctionProblem(Config * config) :
 		Problem(config) {
 
 	if (configProblem == nullptr) {
@@ -42,7 +41,7 @@ FunctionProblem::FunctionProblem(Config * config) :
 		throw ProblemException("The property num_vars must be ");
 	}
 
-	this->configvar = new variable[num_vars];
+	this->configvar = new pvariable[num_vars];
 
 	int numgenes = config->getInt("NumberGenes");
 	int numbits = numgenes / num_vars;
@@ -75,23 +74,35 @@ FunctionProblem::FunctionProblem(Config * config) :
 
 	int res = fparser.Parse(function, s);
 	if (res >= 0) {
-		LOG4CXX_ERROR(logger,
+		LOG4CXX_ERROR(plogger,
 				"Error reading the function: "<< function<<" "<<std::string(res + 7, ' ') << "\n" << fparser.ErrorMsg());
 
 		throw ProblemException("Error reading the function. ");
 	}
 }
 
-double FunctionProblem::evaluate(Individual * individual) {
+double ParseFunctionProblem::evaluate(Individual * individual) {
 	std::vector<double> d = decode(individual->get_genotype());
 	double values[d.size()]={0};
 
+	double val = 0;
 	for (unsigned int i = 0; i < d.size(); i++) {
 		values[i] = d.at(i);
+
+		double sum = 0;
+		for (int j = 0; j < i; j++) {
+			sum += values[j];
+		}
+		val += pow(sum, 2);
 	}
 
-	double fitness = 1/(1 + fparser.Eval(values));
-	LOG4CXX_TRACE(logger, " i: "<<individual<< " fitness: "<< fitness<< " "<< decode(individual));
+
+	double eval = fparser.Eval(values);
+
+	double fitness = 1/(1 + eval);
+
+	LOG4CXX_TRACE(plogger, " i: "<<individual<< " fitness: "<< fitness<< " "<< decode(individual));
+
 
 	// to minimize we must invert the function
 	// the algorithm is always increasing fitnesss
@@ -99,7 +110,7 @@ double FunctionProblem::evaluate(Individual * individual) {
 
 }
 
-string FunctionProblem::decode(Individual * individual) {
+string ParseFunctionProblem::decode(Individual * individual) {
 	stringstream aux;
 	int offset = 0;
 	vector<bool> v = individual->get_genotype()->grayToBinary();
@@ -113,14 +124,14 @@ string FunctionProblem::decode(Individual * individual) {
 	return aux.str();
 }
 
-FunctionProblem::~FunctionProblem() {
+ParseFunctionProblem::~ParseFunctionProblem() {
 	delete configvar;
 }
 
 /**
  * get a var value inside a genotype
  */
-double FunctionProblem::dec(vector<bool> gens, int offset, int bits, double min,
+double ParseFunctionProblem::dec(vector<bool> gens, int offset, int bits, double min,
 		double max, double step) {
 	int index = Util::b2i(gens, offset, bits);
 	return (step * index) + min;
@@ -129,7 +140,7 @@ double FunctionProblem::dec(vector<bool> gens, int offset, int bits, double min,
 /**
  * decode the whole genotype as array of double
  */
-vector<double> FunctionProblem::decode(GenotypeBit * genotype) {
+vector<double> ParseFunctionProblem::decode(GenotypeBit * genotype) {
 	stringstream out;
 	vector<double> result;
 	int offset = 0;

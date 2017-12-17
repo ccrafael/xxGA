@@ -8,6 +8,7 @@
 #ifndef OUTPUT_H_
 #define OUTPUT_H_
 
+#include <chrono>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -15,6 +16,7 @@
 #include <mutex>
 #include <ctime>
 #include <vector>
+
 #include "Config.h"
 #include "Population.h"
 #include "Individual.h"
@@ -30,14 +32,18 @@ using namespace std;
  * Note all threads writes to the same file there fore this class is thread safe.
  */
 class Output {
+	static log4cxx::LoggerPtr logger;
+
 	Config * config;
 	Problem * problem;
 	ofstream generation_file;
 	ofstream  solution_file;
-	bool detail;
+	int numgen_to_print;
 	std::mutex m;
 	static constexpr const char* SEPARATOR = ",";
-	unsigned t0, t1;
+
+	std::chrono::time_point<std::chrono::steady_clock> t0;
+	std::chrono::time_point<std::chrono::steady_clock> t1;
 
 public:
 	Output(Problem * problem, Config * config);
@@ -81,6 +87,11 @@ public:
 	 * Get the time consumed by the execution.
 	 */
 	double time();
+
+	/*
+	 * Just print the configuration.
+	 */
+	void print_conf();
 };
 
 #endif /* OUTPUT_H_ */

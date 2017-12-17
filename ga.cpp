@@ -53,7 +53,6 @@ void GA::init() {
 	delete individuals;
 }
 
-
 void GA::evolve(int generations) {
 
 	if (population == nullptr) {
@@ -90,20 +89,22 @@ void GA::evolve(int generations) {
 		delete parents;
 		delete offspring;
 
-		while (notSurvivors->size() > 0) {
-			Individual * i = notSurvivors->back();
-			notSurvivors->pop_back();
-			delete i;
+		for (IContainer::iterator it = notSurvivors->begin();
+				it != notSurvivors->end(); ++it) {
+			delete (*it);
 		}
+
 		delete notSurvivors;
 
+		// end
 		this->generation++;
 
+		// is written this way because the macro will add an if
 		LOG4CXX_TRACE(logger,
-				"Generation: "<<this->generation<<". Best: " << population->best());
+				"Generation: "<<this->generation<<". Best: " << population->best() << " ["<<problem->decode(population->best())<<"]");
 	}
 	LOG4CXX_DEBUG(logger,
-					"Generation: "<<this->generation<<". Best: " << population->best());
+			"Generation: "<<this->generation<<". Best: " << population->best());
 }
 
 Population * GA::getPopulation() {

@@ -1,0 +1,80 @@
+OutputFile = result.csv 
+ProblemFileConfig = utest/functions.conf
+
+NumberIsles = 10
+
+# Number of individuals for a population into a island
+NumberIndividuals = 10
+
+# Number of genes for each individual
+NumberGenes = 10
+
+# Number of generations
+NumberGenerations = 10000
+
+# Number of generations before the migration process start
+MigrationEveryGenerations = 10
+
+# Migration type
+# 1: Select NumberMigrants randomly
+# 2: select the NumberMigrants worsts individuals
+MigrationType = 1
+
+# Number of migrants 
+NumberMigrants = 5
+
+# Save the statictis for each generation
+SaveDetail = 1
+
+
+# Type of encondig
+# 1: Binary encoding, Genotype(0 1 0 1) -> Phenotype(5)
+# 2: Gray encoding,   Genotype(0 1 0 1) -> Phenotype(6) (See 'GAs + Data Structures = Evolution Programs', page 99)
+EncodingType = 2
+
+
+# Number of individuals in the population
+IndividualsNumber = 100
+
+# Type of parent selection (method of constructing the mating pool):
+# 1: Fitness-proportional selection
+# 2: Stochastic universal sampling
+# 3: Ranking selection (linear)
+# 4: Tournament selection
+ParentSelectionType = 4
+
+NumParents = 2
+
+# Expected number of offspring alloted to the fittest individual (just in case of linear ranking selection). Range: [1,2]
+ExpectedOffspringNumberForFittestIndividual = 2
+
+# Tournament size (just in case of tournament selection). Range: [2,IndividualsNumber].
+TournamentSize = 10
+
+# Type of crossover:
+# 1: One-point crossover
+# 3: N-point crossover
+# 4: Parameterized uniform crossover
+CrossoverType = 1
+
+# Number of crossover points (just in case of N-point crossover). Range: [1,GenesNumber-1]
+CrossoverPointsNumber = 3
+
+# Exchange probability (just in case of Parameterized Uniform Crossover)
+ExchangeProbability = 0.7
+
+# Mutation rate
+MutationRate = 0.07
+
+# Type of survivor selection:
+# 1: Generational model
+# 2: Steady state model
+SurvivorSelectionType = 2
+
+# Elistism (just in case of generational model for survivor selection)
+# 1: ON
+# 2: OFF
+Elitism = 1
+
+# Generational gap (just in case of steady state model for survivor selection). Range: [1, IndividualsNumber].
+GenerationalGap = 29

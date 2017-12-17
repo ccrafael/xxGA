@@ -15,22 +15,12 @@
  * like thresholds, rates, etc usually used by the operators.
  */
 class Context {
-	Context(){
-		mutation_rate = 0.5;
-		config = nullptr;
-		num_parents = 2;
-		tournament_size = 10;
-		exchange_probability = 0.5;
-		num_migrants = 5;
-	}
-
+	Context();
+	static Context * the_instance ;
 	Context& operator=(Context&);
 	Context(const Context&);
 public:
-	static Context * instance(){
-		static Context the_instance;
-		return &the_instance;
-	}
+	static Context * instance() ;
 
 	Config * config;
 	double mutation_rate;
@@ -38,7 +28,9 @@ public:
 	unsigned short tournament_size;
 	double exchange_probability;
 	int num_migrants;
+
 };
+
 
 
 #endif /* CONTEXT_H_ */

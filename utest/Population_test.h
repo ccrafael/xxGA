@@ -11,10 +11,10 @@
 #include <sstream>
 #include <iostream>
 #include "utests.h"
-#include "../problems/FunctionProblem.h"
 #include "../Population.h"
 #include "../GenotypeBit.h"
 #include "../ga.h"
+#include "../problems/ParseFunctionProblem.h"
 
 /*
  * A unit test for Population and all its dependencies, therefore
@@ -166,7 +166,7 @@ void Population_test::test(void) {
 
 void Population_test::setUp(void) {
 	config = new Config(string("utest/config"));
-	problem = new FunctionProblem(config);
+	problem = new ParseFunctionProblem(config);
 	pop = new Population();
 	int num_individuals = config->getInt(GA::POPULATION_SIZE_PARAM);
 	int num_genes = config->getInt(GA::NUMBER_OF_GENES_PARAM);

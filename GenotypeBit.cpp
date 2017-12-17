@@ -13,10 +13,12 @@ using namespace std;
 GenotypeBit::GenotypeBit() {
 	//Empty
 }
+GenotypeBit::~GenotypeBit() {
+}
 
 GenotypeBit::GenotypeBit(int size) {
 	for (int i = 0; i < size; i++) {
-		genotype.push_back(0 == Util::rand(2));
+		genotype.push_back(Util::rand(2));
 	}
 }
 
@@ -35,8 +37,6 @@ bool GenotypeBit::at(int i) {
 	return genotype.at(i);
 }
 
-GenotypeBit::~GenotypeBit() {
-}
 
 int GenotypeBit::size() {
 	return GenotypeBit::genotype.size();

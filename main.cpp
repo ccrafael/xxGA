@@ -20,11 +20,11 @@
 #include "Island.h"
 #include "exception/ConfigurationException.h"
 
-#include "problems/FunctionProblem.h"
 #include "problems/BagProblem.h"
 #include "Problem.h"
 #include "Output.h"
 #include "Context.h"
+#include "problems/FunctionsProblem.h"
 
 #include "utest/utests.h"
 
@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
 		 * TODO create an abstraction of this to easily change the problem.
 		 */
 
-		Problem * problem = new FunctionProblem(&config);
+		Problem * problem = new FunctionsProblem(&config);
 		//Problem *  proble = new BagProblem(&config);
 
 		OperatorFactory operatorFactory(&config);
@@ -115,17 +115,21 @@ int main(int argc, char** argv) {
 			islands.push_back(island);
 		}
 
-		// this connect all the islands as a ring
-		for (int i = 0; i < num_islands; i++) {
-			vector<Island*> neihgborhood;
-			int left = i > 0?i - 1: num_islands -1;
-			int right = i < num_islands-1?i + 1: 0;
+		LOG4CXX_INFO(logger, "Creating neighborhood.");
+		if (num_islands > 1) {
+			// this connect all the islands as a ring
+			for (int i = 0; i < num_islands; i++) {
+				vector<Island*> neihgborhood;
+				int left = i > 0?i - 1: num_islands -1;
+				int right = i < num_islands-1?i + 1: 0;
 
-			neihgborhood.push_back(islands[left]);
-			neihgborhood.push_back(islands[right]);
-			islands[i]->set_neighborhood(neihgborhood);
+				neihgborhood.push_back(islands[left]);
+				neihgborhood.push_back(islands[right]);
+				islands[i]->set_neighborhood(neihgborhood);
+			}
 		}
 
+		LOG4CXX_INFO(logger, "Launching threads.");
 		// Create the num_islands islands and start the evolution into it
 		for (int i = 0; i < num_islands; i++) {
 			workers.push_back(std::thread([i, islands, logger]() {
@@ -149,6 +153,10 @@ int main(int argc, char** argv) {
 		// stop the timer
 		output.stop();
 
+		// print the conf to identify the experiment later
+		output.print_conf();
+
+		LOG4CXX_INFO(logger, "Collecting final results. ");
 		// print the final statistics and the results
 		// all will be written to the file specified in the configuration file.
 		Individual * better = nullptr;

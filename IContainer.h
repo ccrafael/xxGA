@@ -23,5 +23,6 @@
  * TODO should be a template
  */
 typedef vector<Individual*> IContainer;
+typedef IContainer::iterator ItC;
 
 #endif /* ICONTAINER_H_ */

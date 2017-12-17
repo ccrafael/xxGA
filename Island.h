@@ -44,6 +44,7 @@ class Island: public GA {
 
 	int maxGenerations;
 	int num_migration = 0;
+	bool valid = true;
 
 	static constexpr const char* MAX_GENERATIONS_PARAM = "NumberGenerations";
 	static constexpr const char * PARAM_RUN_FOR_N_GENERATIONS =
@@ -99,6 +100,8 @@ public:
 
 
 	void init();
+
+	void invalidate();
 
 };
 

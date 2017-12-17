@@ -6,6 +6,8 @@
  */
 
 #include "OperatorFactory.h"
+log4cxx::LoggerPtr OperatorFactory::logger(
+		log4cxx::Logger::getLogger("operatorFactory"));
 
 OperatorFactory::OperatorFactory(Config * config) {
 	this->config = config;
@@ -23,9 +25,18 @@ OperatorFactory::~OperatorFactory() {
 std::function<IContainer* (IContainer*, int)> OperatorFactory::createCrossoverOperator() {
 	switch (config->getInt("CrossoverType")) {
 
-	case 1: return crossover::onepoint;
-	case 4: return crossover::npoint;
-	default: return crossover::onepoint;
+	case 1: {
+		LOG4CXX_TRACE(logger, "Crossover: One point crossover");
+		return crossover::onepoint;
+	}
+	case 4: {
+		LOG4CXX_TRACE(logger, "Crossover: N point crossover");
+		return crossover::npoint;
+	}
+	default: {
+		LOG4CXX_TRACE(logger, "Crossover: One point crossover");
+		return crossover::onepoint;
+	}
 
 	}
 
@@ -45,11 +56,29 @@ std::function<void(IContainer*)> OperatorFactory::createMutationOperator() {
  */
 std::function<IContainer* (Population*)> OperatorFactory::createParentSelectionOperator() {
 	switch (config->getInt("ParentSelectionType")) {
-	case 1: return selection::fitnessproportional;
-	case 2: return selection::stochasticuniversalsampling;
-	case 3: return selection::ranking;
-	case 4: return selection::tournament;
-	default: return selection::basic;
+	case 1: {
+		LOG4CXX_TRACE(logger, "Selection: Fitness proportional selection. ");
+		return selection::fitnessproportional;
+	}
+	case 2: {
+		LOG4CXX_TRACE(logger, "Selection: Stochastic universal sampling. ");
+
+		return selection::stochasticuniversalsampling;
+	}
+	case 3: {
+
+		LOG4CXX_TRACE(logger, "Selection: Ranking selection. ");
+		return selection::ranking;
+	}
+	case 4: {
+		LOG4CXX_TRACE(logger, "Selection: Tournament selection. ");
+		return selection::tournament;
+	}
+	default: {
+
+		LOG4CXX_TRACE(logger, "Selection: Basic (random) selection. ");
+		return selection::basic;
+	}
 	}
 
 }
@@ -60,10 +89,20 @@ std::function<IContainer* (Population*)> OperatorFactory::createParentSelectionO
  */
 std::function<IContainer* (Population*, IContainer*)> OperatorFactory::createReplacementSelectionOperator() {
 	switch (config->getInt("SurvivorSelectionType")) {
-	case 1: return replacement::generational;
-	case 2: return replacement::steadystate;
+	case 1: {
+		LOG4CXX_TRACE(logger, "Replacement: generational  ");
 
-	default: return replacement::empty;
+		return replacement::generational;
+	}
+	case 2: {
+		LOG4CXX_TRACE(logger, "Replacement: steady state ");
+		return replacement::steadystate;
+	}
+
+	default: {
+		LOG4CXX_TRACE(logger, "Replacement: empty ");
+		return replacement::empty;
+	}
 	}
 
 }
@@ -74,9 +113,26 @@ std::function<IContainer* (Population*, IContainer*)> OperatorFactory::createRep
  */
 std::function<IContainer* (Population*)> OperatorFactory::createEmigrationSelectionOperator() {
 	switch (config->getInt("MigrationType")) {
-	case 1: return selection::basicmigration;
-	case 2: return selection::worsts;
-	default:	return selection::basicmigration;
+	case 1: {
+
+		LOG4CXX_TRACE(logger, "Emigration: basicmigration ");
+		return selection::basicmigration;
+	}
+	case 2: {
+
+		LOG4CXX_TRACE(logger, "Emigration: worst. ");
+		return selection::worsts;
+	}
+	case 3: {
+
+		LOG4CXX_TRACE(logger, "Emigration: bests. ");
+		return selection::bests;
+	}
+	default: {
+
+		LOG4CXX_TRACE(logger, "Emigration: basic. ");
+		return selection::basicmigration;
+	}
 	}
 
 }
@@ -89,9 +145,7 @@ std::function<IContainer* (Population*)> OperatorFactory::createImmigrationSelec
 	return selection::basicmigration;
 }
 
-
-std::function<void (Problem*, IContainer*)> OperatorFactory::createEvaluationOperator() {
+std::function<void(Problem*, IContainer*)> OperatorFactory::createEvaluationOperator() {
 	return evaluation::basicevaluation;
 }
-
 

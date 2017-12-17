@@ -1,34 +1,34 @@
-OutputGenerationFile = /dev/shm/generation.csv
-OutputSolutionFile = /dev/shm/solution.csv 
+OutputGenerationFile = generation
+OutputSolutionFile = solution
 
+# each N generations the statistics are written
+OuputEachGenerations = 1000 
 
 //ProblemFileConfig = etc/bag.conf
 ProblemFileConfig = etc/function.conf
 
-NumberIsles = 10 
+NumberIsles = 8
 
 # Number of individuals for a population into a island
-NumberIndividuals = 1000
+NumberIndividuals = 100
 
 # Number of genes for each individual
-NumberGenes = 80
+NumberGenes = 160
 
 # Number of generations
 NumberGenerations = 1000000
 
 # Number of generations before the migration process start
-MigrationEveryGenerations = 10000
+MigrationEveryGenerations = 1000
 
 # Migration type
 # 1: Select NumberMigrants randomly
 # 2: select the NumberMigrants worsts individuals
+# 3: select the NumberMigrants best individuals
 MigrationType = 1
 
 # Number of migrants 
 NumberMigrants = 5
-
-# Save the statictis for each generation
-SaveDetail = 1
 
 # Type of parent selection (method of constructing the mating pool):
 #  0: basic seleccion (two parents randomly 

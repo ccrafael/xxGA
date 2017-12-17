@@ -16,6 +16,7 @@
 #include "operators/ReplacementCollection.h"
 #include "operators/SelectionCollection.h"
 #include "operators/EvaluationCollection.h"
+#include "log4cxx/logger.h"
 
 /*
  * A factory used to build the operators that will be used later to apply the evolution
@@ -26,6 +27,7 @@
  * cpu clock cycles.
  */
 class OperatorFactory {
+	static log4cxx::LoggerPtr logger;
 	Config * config;
 
 public:

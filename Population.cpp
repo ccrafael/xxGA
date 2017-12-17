@@ -81,9 +81,15 @@ Individual* Population::worst() {
 }
 
 IContainer * Population::worsts(int n) {
-	multiset<Individual*>::iterator it = individuals.begin();
+	It it = individuals.begin();
 	std::advance(it, n);
 	return new IContainer(this->individuals.begin(), it);
+}
+
+IContainer * Population::bests(int n) {
+	multiset<Individual*>::reverse_iterator it = individuals.rbegin();
+	std::advance(it, n);
+	return new IContainer(it.base(), individuals.end());
 }
 
 double Population::mean_fitness() {
@@ -91,25 +97,20 @@ double Population::mean_fitness() {
 }
 
 double Population::total_fitness() {
-	std::vector<double> fitnesses(individuals.size());
-	std::transform(individuals.begin(), individuals.end(), fitnesses.begin(),
-			[](Individual * i) {return i->fitness();});
-	return accumulate(fitnesses.begin(), fitnesses.end(), 0.0);
+	double sum = 0;
+	for (It it = individuals.begin(); it != individuals.end(); ++it) {
+		sum += (*it)->fitness();
+	}
+	return sum;
 }
 
-double Population::stdev_fitness() {
+double Population::stdev_fitness(double mean) {
+	double sum = 0;
+	for (It it = individuals.begin(); it != individuals.end(); ++it) {
+		sum += pow((*it)->fitness()- mean, 2);
+	}
 
-	double mean = mean_fitness();
-	std::vector<double> diff(individuals.size());
-
-	std::transform(individuals.begin(), individuals.end(), diff.begin(),
-			[mean](Individual * x) {return pow(x->fitness()- mean, 2);});
-
-	double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(),
-			0.0);
-	return std::sqrt(sq_sum / individuals.size());
-
-	return 0.0;
+	return std::sqrt(sum / (individuals.size()-1));
 }
 
 int Population::size() {

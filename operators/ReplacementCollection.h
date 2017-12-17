@@ -40,7 +40,7 @@ const std::function<IContainer*(Population*, IContainer*)> steadystate =
 		[](Population* p, IContainer* group) {
 
 			// the get the worst by fitness
-			IContainer* toremove= p->worsts(group->size());
+			IContainer * toremove= p->worsts(group->size());
 
 			// just add the new  individuals
 			p->add(group);

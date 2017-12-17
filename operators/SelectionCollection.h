@@ -53,7 +53,7 @@ const std::function<IContainer* (Population*)> tournament =
 			while (container->size() < context->num_parents) {
 				vector<int> tournament = Util::random(pop_size, context->tournament_size);
 
-				// the best is the biggest because population is ordered by fitness
+				// the best is the higher number because population is ordered by fitness
 				int selected = *std::max_element(tournament.begin(),tournament.end());
 
 				container->push_back(pop->at(selected));
@@ -82,6 +82,7 @@ const std::function<IContainer* (Population*)> basicmigration =
 			IContainer * container = new IContainer();
 			Context * context = Context::instance();
 
+			// select without repetition
 			vector<int> selected = Util::random((int)pop->size(), context->num_migrants);
 			for (unsigned int i = 0; i < selected.size(); i++) {
 				container->push_back(pop->at(selected.at(i)));
@@ -93,6 +94,11 @@ const std::function<IContainer* (Population*)> basicmigration =
 const std::function<IContainer* (Population*)> worsts = [](Population* pop) {
 	Context * context = Context::instance();
 	return pop->worsts(context->num_migrants);
+};
+
+const std::function<IContainer* (Population*)> bests = [](Population* pop) {
+	Context * context = Context::instance();
+	return pop->bests(context->num_migrants);
 };
 
 const std::function<IContainer* (Population*)> fitnessproportional =

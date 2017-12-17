@@ -1,12 +1,12 @@
 /*
- * FunctionProblem.h
+ * ParseFunctionProblem.h
  *
  *  Created on: 26 Nov 2017
  *      Author: fali
  */
 
-#ifndef FUNCTIONPROBLEM_H_
-#define FUNCTIONPROBLEM_H_
+#ifndef PARSEFUNCTIONPROBLEM_H_
+#define PARSEFUNCTIONPROBLEM_H_
 
 #include <log4cxx/logger.h>
 #include <string>
@@ -19,7 +19,7 @@
 
 using namespace std;
 
-struct variable {
+struct pvariable {
 	double min;
 	double max;
 	int bits;
@@ -27,14 +27,14 @@ struct variable {
 	double count;
 };
 
-class FunctionProblem: public Problem {
+class ParseFunctionProblem: public Problem {
 	static log4cxx::LoggerPtr plogger;
 
 	FunctionParser fparser;
 	short num_vars;
 
 	// se usa para evaluar la funcion buscando en todo el dominio
-	variable * configvar;
+	pvariable * configvar;
 
 	/*
 	 * Convenience method to get the value of the specific variable from the genotype, the string of bits.
@@ -60,15 +60,15 @@ public:
 	 * Constructor.
 	 * @param filename A string with the file path that contains the properties to load.
 	 */
-	FunctionProblem(Config * config);
+	ParseFunctionProblem(Config * config);
 
 	/**
 	 * Destructor.
 	 */
-	virtual ~FunctionProblem();
+	virtual ~ParseFunctionProblem();
 
 	double evaluate(Individual * individual);
 	string decode(Individual * individual);
 
 };
-#endif /* FUNCTIONPROBLEM_H_ */
+#endif /* PARSEFUNCTIONPROBLEM_H_ */

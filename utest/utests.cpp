@@ -11,6 +11,8 @@
 #include "Individual_test.h"
 #include "Population_test.h"
 #include "OperatorFactory_test.h"
+#include "Functions_test.h"
+#include "Utils_test.h"
 
 
 using namespace CppUnit;
@@ -21,6 +23,8 @@ using namespace std;
 CPPUNIT_TEST_SUITE_REGISTRATION(Individual_test);
 CPPUNIT_TEST_SUITE_REGISTRATION(Population_test);
 CPPUNIT_TEST_SUITE_REGISTRATION(OperatorFactory_test);
+CPPUNIT_TEST_SUITE_REGISTRATION(Functions_test);
+CPPUNIT_TEST_SUITE_REGISTRATION(Util_test);
 
 
 int tests_main(int argc, char* argv[]) {

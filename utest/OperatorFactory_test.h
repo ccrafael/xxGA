@@ -142,7 +142,7 @@ void OperatorFactory_test::setUp(void) {
 	context->config = config;
 	context->num_parents = config->getInt("NumParents");
 
-	problem = new FunctionProblem(config);
+	problem = new ParseFunctionProblem(config);
 	factory = new OperatorFactory(config);
 	population = new Population();
 

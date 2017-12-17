@@ -8,14 +8,18 @@ Makefile automatically created by Eclipse.
 
 ## Dependencies
 
-Unit tests http://www.yolinux.com/TUTORIALS/CppUnit.html:
+Unit tests libcppunit-1.14 http://www.yolinux.com/TUTORIALS/CppUnit.html:
+
 ```
 apt-get install libcppunit-doc libcppunit-dev
 ```
-Logging https://logging.apache.org/log4cxx/latest_stable/:
+
+Logging using log4cxx 0.10 https://logging.apache.org/log4cxx/latest_stable/:
+
 ```
 apt-get install liblog4cxx-dev 
 ```
+
 The project uses C++14:
 https://gcc.gnu.org/gcc-6/changes.html
 

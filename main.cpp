@@ -23,9 +23,8 @@
 #include "problems/BagProblem.h"
 #include "Problem.h"
 #include "Output.h"
-#include "Context.h"
 #include "problems/FunctionsProblem.h"
-
+#include "Environment.h"
 #include "utest/utests.h"
 
 using namespace log4cxx;
@@ -70,13 +69,14 @@ int main(int argc, char** argv) {
 		Config config(filename);
 
 		// save some global vars for fast access of the operators
-		Context * context = Context::instance();
-		context->config = &config;
-		context->mutation_rate = config.getDouble("MutationRate");
-		context->num_parents = config.getInt("NumParents");
-		context->tournament_size = config.getInt("TournamentSize");
-		context->exchange_probability = config.getDouble("ExchangeProbability");
-		context->num_migrants = config.getInt("NumberMigrants");
+		Environment * env = Environment::instance();
+		env->config = &config;
+		env->mutation_rate = config.getDouble("MutationRate");
+		env->num_parents = config.getInt("NumParents");
+		env->tournament_size = config.getInt("TournamentSize");
+		env->exchange_probability = config.getDouble("ExchangeProbability");
+		env->num_migrants = config.getInt("NumberMigrants");
+		env->num_offspring = config.getInt("NumberOffspring");
 
 		LOG4CXX_INFO(logger, "Loading problem and operators.");
 
@@ -102,6 +102,9 @@ int main(int argc, char** argv) {
 
 		LOG4CXX_INFO(logger, "Creating islands.");
 
+		// TODO opencl should be problem specific or algorithm common??
+		// TODO move this to a opencl initialization function or samething like that
+
 		int num_islands = config.getInt("NumberIsles");
 
 		std::vector<Island *> islands;
@@ -120,8 +123,8 @@ int main(int argc, char** argv) {
 			// this connect all the islands as a ring
 			for (int i = 0; i < num_islands; i++) {
 				vector<Island*> neihgborhood;
-				int left = i > 0?i - 1: num_islands -1;
-				int right = i < num_islands-1?i + 1: 0;
+				int left = i > 0 ? i - 1 : num_islands - 1;
+				int right = i < num_islands - 1 ? i + 1 : 0;
 
 				neihgborhood.push_back(islands[left]);
 				neihgborhood.push_back(islands[right]);
@@ -139,7 +142,7 @@ int main(int argc, char** argv) {
 				LOG4CXX_INFO(logger, "Evolving island "<<i<<".");
 
 				// All the interesting things happen here.
-				islands[i]->evolveIsland();
+					islands[i]->evolveIsland();
 
 				}));
 

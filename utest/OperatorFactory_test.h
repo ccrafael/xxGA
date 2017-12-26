@@ -17,7 +17,7 @@
 #include "../Problem.h"
 #include "../Config.h"
 #include "../IContainer.h"
-#include "../Context.h"
+#include "../Environment.h"
 #include "../ga.h"
 
 /*
@@ -43,7 +43,7 @@ private:
 	Config * config;
 	Problem * problem;
 	Population * population;
-	Context * context;
+	Environment * context;
 
 };
 
@@ -136,7 +136,7 @@ void OperatorFactory_test::test(void) {
 }
 
 void OperatorFactory_test::setUp(void) {
-	context = Context::instance();
+	context = Environment::instance();
 
 	config = new Config(string("utest/config"));
 	context->config = config;

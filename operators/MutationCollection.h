@@ -13,7 +13,7 @@
 #include "../Individual.h"
 #include "../GenotypeBit.h"
 #include "../exception/OperatorException.h"
-#include "../Context.h"
+#include "../Environment.h"
 
 namespace mutation {
 
@@ -28,7 +28,7 @@ const std::function<void(IContainer*)> empty = [](IContainer* i) {
  * Do nothing.
  */
 const std::function<void(IContainer*)> basic = [](IContainer* g) {
-	Context* context = Context::instance();
+	Environment* context = Environment::instance();
 
 	std::for_each(g->begin(), g->end(),
 			[context](Individual * i) {

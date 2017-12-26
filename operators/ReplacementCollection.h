@@ -15,7 +15,7 @@
 #include "../Population.h"
 #include "../GenotypeBit.h"
 #include "../exception/OperatorException.h"
-#include "../Context.h"
+#include "../Environment.h"
 
 namespace replacement {
 

@@ -37,6 +37,23 @@ std::function<double(vector<double>)> FunctionsProblem::schwefel =
 			return val;
 		};
 
+/*
+ * Rosenbrock function.
+ *
+ * https://en.wikipedia.org/wiki/Rosenbrock_function
+ *
+ */
+std::function<double(vector<double>)> FunctionsProblem::rosenbrock =
+		[](vector<double> vals) {
+			double val = 0;
+			for (unsigned int i = 0; i < vals.size()-1; i++) {
+				double xi = vals[i];
+				val += 100 * pow(vals[i-1] - pow(xi, 2), 2) + pow(1-xi, 2);
+			}
+
+			return val;
+		};
+
 /**
  * The sphere model
  * The sphere model is an ndimesional function in the cotinuous domain. The minimum has value 0.0 at 0.0.
@@ -95,19 +112,34 @@ FunctionsProblem::FunctionsProblem(Config * config) :
 	int numgenes = config->getInt("NumberGenes");
 	int numbits = numgenes / num_vars;
 
+	double xmin = configProblem->getDouble("xmin");
+	double xmax = configProblem->getDouble("xmax");
 
 	for (int i = 0; i < num_vars; i++) {
 
 		configvar[i].bits = numbits;
 		configvar[i].count = 0;
-		configvar[i].min = configProblem->getDouble("xmin");
-		configvar[i].max = configProblem->getDouble("xmax");
+		configvar[i].min = xmin;
+		configvar[i].max = xmax;
 
 		if (configvar[i].min > configvar[i].max) {
 			throw ProblemException("Var min greater than max.");
 		}
 		configvar[i].step = (configvar[i].max - configvar[i].min)
 				/ pow(2, configvar[i].bits);
+	}
+
+	// OpenCl startup
+	if (configProblem->getInt("OpenCL")) {
+		int nargs = 5;
+		double * args = new double[nargs];
+		args[0] = numgenes;
+		args[1] = configProblem->getDouble("xmin");
+		args[2] = (configProblem->getDouble("xmax") - args[1])/pow(2, numbits); //steps
+		args[3] = numbits;
+		args[4] = num_vars;
+
+		clEvaluator = new CLEvaluator(configProblem, args, 5, config->getInt("NumberIsles"));
 	}
 
 	// 1 schwefel, 2 ackley, 3 sphere, 4 rastrigin
@@ -124,7 +156,11 @@ FunctionsProblem::FunctionsProblem(Config * config) :
 	case 4:
 		function = rastrigin;
 		break;
-	default: throw ProblemException("Unknown function.");
+	case 5:
+		function = rosenbrock;
+		break;
+	default:
+		throw ProblemException("Unknown function.");
 	}
 
 }
@@ -170,13 +206,18 @@ double FunctionsProblem::dec(vector<bool> gens, int offset, int bits,
  */
 vector<double> FunctionsProblem::decode(GenotypeBit * genotype) {
 	vector<double> result;
+	vector<bool> binary = genotype->grayToBinary();
+
 	int offset = 0;
 	for (int i = 0; i < num_vars; i++) {
 		result.push_back(
-				dec(genotype->grayToBinary(), offset, configvar[i].bits,
+				dec(binary, offset, configvar[i].bits,
 						configvar[i].min, configvar[i].max, configvar[i].step));
 		offset += configvar[i].bits;
 	}
 	return result;
 }
 
+void FunctionsProblem::clevaluate(IContainer * individuals) {
+	this->clEvaluator->evaluate(individuals);
+}

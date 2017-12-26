@@ -16,20 +16,21 @@
 #include <functional>
 #include <stdexcept>
 #include <string>
-#include "../Context.h"
 #include "../IContainer.h"
 #include "../Individual.h"
 #include "../GenotypeBit.h"
 #include "../exception/OperatorException.h"
+#include "../Environment.h"
 #include "../Util.h"
 
 namespace crossover {
 /**
  * Do nothing.
  */
-const std::function<IContainer* (IContainer*, int )> empty = [](IContainer* i, int g) {
-	return new IContainer();
-};
+const std::function<IContainer* (IContainer*, int)> empty =
+		[](IContainer* i, int g) {
+			return new IContainer();
+		};
 
 /*
  * Crossover of two individuals. From two individuals
@@ -40,51 +41,53 @@ const std::function<IContainer* (IContainer*, int )> empty = [](IContainer* i, i
  * nid2: bbbaaaa
  * the cross point is taken randomly.
  */
-const std::function<IContainer* (IContainer*, int )> onepoint =
+const std::function<IContainer* (IContainer*, int)> onepoint =
 		[](IContainer* i, int generation) {
 
 			if (i == nullptr || i->size() < 2) {
 				throw OperatorException("Basic crossover operator expect 2 indivividuals.");
 			}
 
-			vector<int> parents = Util::random(i->size(), 2);
-			GenotypeBit * p1 = i->at(parents[0])->get_genotype();
-			GenotypeBit * p2 = i->at(parents[1])->get_genotype();
-
-			int size = p1->size();
-
-			int cross_point = Util::rand(size);
-
-			GenotypeBit newGenotype1;
-			GenotypeBit newGenotype2;
-
-			for (int i = 0; i < size; i++) {
-
-				newGenotype1.push_back( i<cross_point?p1->at(i):p2->at(2));
-				newGenotype2.push_back( i>cross_point?p1->at(i):p2->at(2));
-
-			}
-
 			IContainer * container = new IContainer();
+			Environment *context = Environment::instance();
 
-			// be careful individual create its own copy
-			container->push_back(new Individual(&newGenotype1, generation));
-			container->push_back(new Individual(&newGenotype2, generation));
+			while (container->size() < context->num_offspring) {
+				vector<int> parents = Util::random(i->size(), 2);
+				GenotypeBit * p1 = i->at(parents[0])->get_genotype();
+				GenotypeBit * p2 = i->at(parents[1])->get_genotype();
 
+				int size = p1->size();
+
+				int cross_point = Util::rand(size);
+
+				GenotypeBit newGenotype1;
+				GenotypeBit newGenotype2;
+
+				for (int i = 0; i < size; i++) {
+
+					newGenotype1.push_back( i<cross_point?p1->at(i):p2->at(2));
+					newGenotype2.push_back( i>cross_point?p1->at(i):p2->at(2));
+
+				}
+
+				// be careful individual create its own copy
+				container->push_back(new Individual(&newGenotype1, generation));
+				container->push_back(new Individual(&newGenotype2, generation));
+			}
 			return container;
 		};
 
 /*
  * Uniform crossover with a exchange probability.
  */
-const std::function<IContainer* (IContainer*, int )> uniformcrossover =
+const std::function<IContainer* (IContainer*, int)> uniformcrossover =
 		[](IContainer* i, int generation) {
 
 			if (i == nullptr || i->size() < 2) {
 				throw OperatorException("Uniform crossover operator expect 2 individuals.");
 			}
 
-			Context *context = Context::instance();
+			Environment *context = Environment::instance();
 
 			GenotypeBit * p1 = i->at(0)->get_genotype();
 			GenotypeBit * p2 = i->at(1)->get_genotype();
@@ -110,10 +113,11 @@ const std::function<IContainer* (IContainer*, int )> uniformcrossover =
 			return container;
 		};
 
-const std::function<IContainer* (IContainer*, int )> npoint = [](IContainer* i, int g) {
-	throw std::runtime_error("npoint not implemented yet ");
-	return nullptr;
-};
+const std::function<IContainer* (IContainer*, int)> npoint =
+		[](IContainer* i, int g) {
+			throw std::runtime_error("npoint not implemented yet ");
+			return nullptr;
+		};
 
 } // end namespace crossover
 

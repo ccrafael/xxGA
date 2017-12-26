@@ -146,6 +146,14 @@ std::function<IContainer* (Population*)> OperatorFactory::createImmigrationSelec
 }
 
 std::function<void(Problem*, IContainer*)> OperatorFactory::createEvaluationOperator() {
-	return evaluation::basicevaluation;
+	switch (config->getInt("EvaluationType")) {
+	case 1:
+		return evaluation::basicevaluation;
+	case 2:
+		return evaluation::openclevaluation;
+
+	default:
+		return evaluation::basicevaluation;
+	}
 }
 

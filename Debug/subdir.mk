@@ -4,8 +4,9 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../CLEvaluator.cpp \
 ../Config.cpp \
-../Context.cpp \
+../Environment.cpp \
 ../GenotypeBit.cpp \
 ../GenotypeNumber.cpp \
 ../Individual.cpp \
@@ -19,8 +20,9 @@ CPP_SRCS += \
 ../main.cpp 
 
 OBJS += \
+./CLEvaluator.o \
 ./Config.o \
-./Context.o \
+./Environment.o \
 ./GenotypeBit.o \
 ./GenotypeNumber.o \
 ./Individual.o \
@@ -34,8 +36,9 @@ OBJS += \
 ./main.o 
 
 CPP_DEPS += \
+./CLEvaluator.d \
 ./Config.d \
-./Context.d \
+./Environment.d \
 ./GenotypeBit.d \
 ./GenotypeNumber.d \
 ./Individual.d \

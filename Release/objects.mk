@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lpthread -llog4cxx -lcppunit
+LIBS := -lpthread -lOpenCL -llog4cxx -lcppunit
 

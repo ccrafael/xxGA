@@ -47,8 +47,7 @@ Output::Output(Problem* problem, Config* config) {
 void Output::print_header() {
 
 	this->generation_file << "thread_id" << SEPARATOR << "generation"
-			<< SEPARATOR << "fitness" << SEPARATOR << "mean_fitness"
-			<< SEPARATOR << "stdev_fitness" << endl;
+			<< SEPARATOR << "fitness" << SEPARATOR << "mean_fitness"<< endl;
 
 }
 /*
@@ -68,14 +67,13 @@ void Output::print_generation(int generation, Population* population) {
 		LOG4CXX_TRACE(logger, "Get statistics.");
 
 		double mean = population->mean_fitness();
-		double stddev = population->stdev_fitness(mean);
+		//double stddev = population->stdev_fitness(mean);
 
 		LOG4CXX_TRACE(logger, "Print.");
 
 		std::lock_guard<std::mutex> guard(m);
 		this->generation_file << this_id << SEPARATOR << generation << SEPARATOR
-				<< individual->fitness() << SEPARATOR << mean << SEPARATOR
-				<< stddev << endl;
+				<< individual->fitness() << SEPARATOR << mean << endl;
 
 	}
 }

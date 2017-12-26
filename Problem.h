@@ -8,9 +8,11 @@
 #define PROBLEM_H_
 
 #include <log4cxx/logger.h>
+#include <stdexcept>
 #include <string>
 #include "Config.h"
 #include "Individual.h"
+#include "IContainer.h"
 
 
 using namespace std;
@@ -29,31 +31,41 @@ protected:
 	Config * config;
 	Config * configProblem;
 public:
-	/**
+	/*!
 	 * Load the problem configuration into a different  Config object.
 	 * Properties of the problem are into different file than properties of the
 	 * algorithm.
 	 */
 	Problem(Config * config);
 
-	/*
+	/*!
 	 * Get the fitness of a individual.
 	 * @param individual The individual to evaluate.
 	 * @return The fitness associated with the individual.
 	 */
 	virtual double evaluate(Individual * individual) =  0;
-	/*
+
+	/*!
+	 * Evaluate all individuals at once using opencl.
+	 *
+	 * This method must return the individuals evaluated.
+	 */
+	virtual void clevaluate(IContainer * individuals);
+
+
+	/*!
 	 * Decode a individual to show the solution.
 	 * @param individual The individual to evaluate.
 	 * @return The string representation of that individual in the phenotype plane.
 	 */
 	virtual string decode(Individual * individual) = 0;
+
 	virtual ~Problem();
+
 
 private:
 	static constexpr const char* PROBLEM_FILE_CONFIG = "ProblemFileConfig";
 };
-
 
 
 #endif /* PROBLEM_H_ */

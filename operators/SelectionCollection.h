@@ -20,7 +20,7 @@
 #include "../Individual.h"
 #include "../GenotypeBit.h"
 #include "../exception/OperatorException.h"
-#include "../Context.h"
+#include "../Environment.h"
 #include "../Util.h"
 
 namespace selection {
@@ -43,7 +43,7 @@ const std::function<IContainer* (Population*)> empty = [](Population* pop) {
 const std::function<IContainer* (Population*)> tournament =
 		[](Population* pop) {
 			IContainer * container = new IContainer();
-			Context * context = Context::instance();
+			Environment * context = Environment::instance();
 			int pop_size = (int)pop->size();
 
 			if (context->num_parents > pop->size()) {
@@ -67,7 +67,7 @@ const std::function<IContainer* (Population*)> tournament =
  */
 const std::function<IContainer* (Population*)> basic = [](Population* pop) {
 	IContainer * container = new IContainer();
-	Context * context = Context::instance();
+	Environment * context = Environment::instance();
 
 	vector<int> selected = Util::random((int)pop->size(), context->num_parents);
 	for (unsigned int i = 0; i < selected.size(); i++) {
@@ -80,7 +80,7 @@ const std::function<IContainer* (Population*)> basic = [](Population* pop) {
 const std::function<IContainer* (Population*)> basicmigration =
 		[](Population* pop) {
 			IContainer * container = new IContainer();
-			Context * context = Context::instance();
+			Environment * context = Environment::instance();
 
 			// select without repetition
 			vector<int> selected = Util::random((int)pop->size(), context->num_migrants);
@@ -92,12 +92,12 @@ const std::function<IContainer* (Population*)> basicmigration =
 		};
 
 const std::function<IContainer* (Population*)> worsts = [](Population* pop) {
-	Context * context = Context::instance();
+	Environment * context = Environment::instance();
 	return pop->worsts(context->num_migrants);
 };
 
 const std::function<IContainer* (Population*)> bests = [](Population* pop) {
-	Context * context = Context::instance();
+	Environment * context = Environment::instance();
 	return pop->bests(context->num_migrants);
 };
 

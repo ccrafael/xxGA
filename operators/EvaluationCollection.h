@@ -14,19 +14,19 @@
 #include "../Individual.h"
 #include "../GenotypeBit.h"
 #include "../exception/OperatorException.h"
-#include "../Context.h"
+#include "../Environment.h"
 
 namespace evaluation {
 
-/**
+/*!
  * Do nothing.
  */
 const std::function<void(Problem*, IContainer*)> empty = [](Problem*, IContainer* i) {
 	// do what was promised
 	};
 
-/**
- * Do nothing.
+/*!
+ * \brief Basic evaluation.
  */
 const std::function<void(Problem*, IContainer*)> basicevaluation = [](Problem* p, IContainer* g) {
 
@@ -39,6 +39,18 @@ const std::function<void(Problem*, IContainer*)> basicevaluation = [](Problem* p
 
 };
 
+
+
+/*!
+ * \brief Basic evaluation.
+ */
+const std::function<void(Problem*, IContainer*)> openclevaluation = [](Problem* p, IContainer* g) {
+
+	p->clevaluate(g);
+};
+
 }
+
+
 
 #endif /* OPERATORS_EVALUATIONCOLLECTION_H_ */

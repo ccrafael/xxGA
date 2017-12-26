@@ -12,9 +12,14 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <string>
+#include <fstream>
+#include <streambuf>
 
 #include "../Problem.h"
 #include "../GenotypeBit.h"
+
+#include "../CLEvaluator.h"
 
 using namespace std;
 
@@ -28,7 +33,7 @@ struct variable {
 
 class FunctionsProblem: public Problem {
 	static log4cxx::LoggerPtr plogger;
-
+	CLEvaluator * clEvaluator;
 
 	short num_vars;
 
@@ -60,23 +65,28 @@ class FunctionsProblem: public Problem {
 	static std::function<double (vector<double>)> ackley;
 	static std::function<double (vector<double>)> schwefel;
 	static std::function<double (vector<double>)> rastrigin;
+	static std::function<double (vector<double>)> rosenbrock;
 
 
 public:
 
-	/**
+	/*!
 	 * Constructor.
 	 * @param filename A string with the file path that contains the properties to load.
 	 */
 	FunctionsProblem(Config * config);
 
-	/**
+	/*!
 	 * Destructor.
 	 */
 	virtual ~FunctionsProblem();
 
 	double evaluate(Individual * individual) override;
 	string decode(Individual * individual) override;
+
+	void clevaluate(IContainer * individuals);
+
+	string kernel_code();
 
 };
 #endif /* FUNCTIONSPROBLEM_H_ */

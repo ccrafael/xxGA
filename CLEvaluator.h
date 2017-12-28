@@ -47,6 +47,7 @@ class CLEvaluator {
 	int nargs;
 	int num_threads;
 	int max_individuals;
+	int max;
 
 	// global vars for sincronization
 	static int count;

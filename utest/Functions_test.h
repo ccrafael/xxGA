@@ -40,6 +40,7 @@ private:
 };
 
 void Functions_test::test(void) {
+
 	GenotypeBit * genotype = new GenotypeBit();
 	genotype->push_back(0);
 	genotype->push_back(0);

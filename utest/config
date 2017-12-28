@@ -65,6 +65,8 @@ CrossoverPointsNumber = 3
 # Exchange probability (just in case of Parameterized Uniform Crossover)
 ExchangeProbability = 0.7
 
+MutationType = 1
+
 # Mutation rate
 MutationRate = 0.07
 

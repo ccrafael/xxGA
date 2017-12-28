@@ -21,6 +21,7 @@ CLEvaluator::CLEvaluator(Config * config, double * args, int nargs,
 	this->num_threads = num_threads;
 	this->nargs = nargs;
 	this->max_individuals = max_individuals;
+	this->max = max_individuals / num_threads;
 
 	// init the gpu
 	init_gpu(config);
@@ -132,7 +133,22 @@ void CLEvaluator::evaluate(IContainer * container) {
 	this->executors_queue.pop();
 	lk.unlock();
 
-	clevaluate (container , e);
+	unsigned int l = 0;
+	unsigned int r = 0;
+
+	while (r < container->size()) {
+
+		if ((container->size() - l) < max) {
+			r += (container->size() - l);
+		} else {
+			r += max;
+		}
+		IContainer eval;
+		std::copy(container->begin()+l, container->begin()+r,
+							std::back_inserter(eval));
+		clevaluate (&eval , e);
+		l = r;
+	}
 
 	lk.lock();
 	this->executors_queue.push(e);

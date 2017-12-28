@@ -45,6 +45,21 @@ class Output {
 	std::chrono::time_point<std::chrono::steady_clock> t0;
 	std::chrono::time_point<std::chrono::steady_clock> t1;
 
+	int eval_count;
+	double eval_sum;
+
+	int mutation_count;
+	double mutation_sum;
+
+	int selection_count;
+	double selection_sum;
+
+	int crossover_count;
+	double crossover_sum;
+
+	int replacement_count;
+	double replacement_sum;
+
 public:
 	Output(Problem * problem, Config * config);
 	virtual ~Output();
@@ -72,6 +87,12 @@ public:
 	 * prints the header info.
 	 */
 	void print_header();
+
+	void eval(double time);
+	void selection(double time);
+	void crossover(double time);
+	void replacement(double time);
+	void mutation(double time);
 
 	/*
 	 * Start a timer.

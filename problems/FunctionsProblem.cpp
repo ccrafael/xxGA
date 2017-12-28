@@ -25,23 +25,19 @@ log4cxx::LoggerPtr FunctionsProblem::plogger(
  */
 std::function<double(vector<double>)> FunctionsProblem::schwefel =
 		[](vector<double> vals) {
-			double val = 0;
+			double val = 418.9829*vals.size();
+			double sum = 0;
 			for (unsigned int i = 0; i < vals.size(); i++) {
-				double sum = 0;
-				for (unsigned int j = 0; j <= i; j++ ) {
-					sum += vals[j];
-				}
-				val += pow(sum, 2);
+				sum += vals[i] * sin(sqrt(fabs(vals[i])));
 			}
 
-			return val;
+			return val - sum;
 		};
 
 /*
  * Rosenbrock function.
  *
  * https://en.wikipedia.org/wiki/Rosenbrock_function
- *
  */
 std::function<double(vector<double>)> FunctionsProblem::rosenbrock =
 		[](vector<double> vals) {
@@ -115,6 +111,10 @@ FunctionsProblem::FunctionsProblem(Config * config) :
 	double xmin = configProblem->getDouble("xmin");
 	double xmax = configProblem->getDouble("xmax");
 
+	LOG4CXX_TRACE(logger, "xmin: "<<xmin);
+	LOG4CXX_TRACE(logger, "xmax: "<<xmax);
+	LOG4CXX_TRACE(logger, "numbits: "<<numbits);
+
 	for (int i = 0; i < num_vars; i++) {
 
 		configvar[i].bits = numbits;
@@ -129,21 +129,27 @@ FunctionsProblem::FunctionsProblem(Config * config) :
 				/ pow(2, configvar[i].bits);
 	}
 
+	int f = configProblem->getInt("function");
+	int nargs = 6;
+
 	// OpenCl startup
-	if (configProblem->getInt("OpenCL")) {
-		int nargs = 5;
+	if (config->getInt("EvaluationType") == 2) {
+
 		double * args = new double[nargs];
 		args[0] = numgenes;
 		args[1] = configProblem->getDouble("xmin");
-		args[2] = (configProblem->getDouble("xmax") - args[1])/pow(2, numbits); //steps
+		args[2] = (configProblem->getDouble("xmax") - args[1])
+				/ pow(2, numbits); //steps
 		args[3] = numbits;
 		args[4] = num_vars;
+		args[5] = f;
 
-		clEvaluator = new CLEvaluator(configProblem, args, 5, config->getInt("NumberIsles"));
+		clEvaluator = new CLEvaluator(configProblem, args, nargs,
+				config->getInt("NumberIsles"), configProblem->getInt("cores"));
 	}
 
 	// 1 schwefel, 2 ackley, 3 sphere, 4 rastrigin
-	switch (configProblem->getInt("function")) {
+	switch (f) {
 	case 1:
 		function = schwefel;
 		break;
@@ -173,9 +179,10 @@ double FunctionsProblem::evaluate(Individual * individual) {
 	std::vector<double> d = decode(individual->get_genotype());
 
 	double val = function(d);
+
 	// to minimize we must invert the function
 	// the algorithm is always increasing fitnesss
-	return 1 / (1 + val);
+	return 1 / (1.0 + val);
 
 }
 
@@ -183,6 +190,7 @@ string FunctionsProblem::decode(Individual * individual) {
 	stringstream aux;
 	int offset = 0;
 	vector<bool> v = individual->get_genotype()->grayToBinary();
+
 	for (int i = 0; i < num_vars; i++) {
 		aux << "x" << i << ": "
 				<< dec(v, offset, configvar[i].bits, configvar[i].min,
@@ -197,7 +205,9 @@ string FunctionsProblem::decode(Individual * individual) {
  */
 double FunctionsProblem::dec(vector<bool> gens, int offset, int bits,
 		double min, double max, double step) {
-	int index = Util::b2i(gens, offset, bits);
+
+	unsigned long index = Util::b2i(gens, offset, bits);
+
 	return (step * index) + min;
 }
 
@@ -211,8 +221,8 @@ vector<double> FunctionsProblem::decode(GenotypeBit * genotype) {
 	int offset = 0;
 	for (int i = 0; i < num_vars; i++) {
 		result.push_back(
-				dec(binary, offset, configvar[i].bits,
-						configvar[i].min, configvar[i].max, configvar[i].step));
+				dec(binary, offset, configvar[i].bits, configvar[i].min,
+						configvar[i].max, configvar[i].step));
 		offset += configvar[i].bits;
 	}
 	return result;

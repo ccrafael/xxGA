@@ -1,53 +1,68 @@
-double schwefel(global double * vals, int nvals) {
+double rosenbrock(double * vals, int nvals) {
 	double val = 0;
-	for (int i = 0; i < nvals; i++) {
-		double sum = 0;
-		for (int j = 0; j <= i; j++ ) {
-			sum += vals[(get_global_id(0)*nvals) + j];
-		}
-		val += pown(sum, 2);
+	//int j = (get_global_id(0)*nvals);
+	
+	for (unsigned int i = 0; i < nvals-1; i++) {
+		double xi = vals[i];
+		val += 100 * pown(vals[i+1] - pown(xi, 2), 2) + pown(1-xi, 2);
 	}
 
 	return val;
 }
-
-void decode(global double * vals, global char * genes, int numgenes, int numvars, double xmin, double step, int numbits) {
-	int offset = 0;
+			
+double schwefel( double * vals, int nvals) {
+	double val = 418.9829*nvals;
+	double sum = 0;
 	
+	//int j = (get_global_id(0)*nvals);
+	
+	for (int i = 0; i < nvals; i++) {
+		double x = vals[i];
+		sum += x * sin(sqrt(fabs(x)));
+	}
+
+	return val - sum;
+}
+
+void decode(double * vals, global char * genes, int numgenes, int numvars, double xmin, double step, int numbits) {
+	int offset = 0;
+	int w = (get_global_id(0)*numgenes);
+	//int v = (get_global_id(0)*numvars);
 	for (int j = 0; j < numvars; j++) {
-		int valor = 0;
-		int potencia = 1;
+		ulong valor = 0;
+		ulong potencia = 1;
 		for (int i = numbits + offset - 1; i >= offset; i--) {
-			int bit = genes[(get_global_id(0)*numgenes) + i];
+			int bit = genes[ w + i];
 			valor += bit * potencia;
 			potencia *= 2;
 		}
 		
 		offset += numbits;
-		vals[(get_global_id(0)*numvars)+j] = (step * valor) + xmin;
+		vals[j] = (step * valor) + xmin;
 	}
 }
 
 void grayToBinary(global char * genes, int numgenes) {
 	// aux buffer TODO this buffer marks the maximum numgenes to use
-	char binary[4096];
-	binary[0] = genes[get_global_id(0)*numgenes];
+	char binary[3200];
+	int j = (get_global_id(0)*numgenes);
+	binary[0] = genes[j];
 	
 	for (int i = 1; i < numgenes; i++) {
-		if (!genes[(get_global_id(0)*numgenes) + i]) {
+		if (!genes[j + i]) {
 			binary[i] = binary[i-1];
 		} else {
 			binary[i] = !binary[i-1];
 		}
 	}
 	
-	// copy the buffer
+	// copy back the buffer
 	for (int i = 0; i < numgenes; i++) {
-		genes[(get_global_id(0)*numgenes) + i] = binary[i];
+		genes[j + i] = binary[i];
 	}
 }
 		
-void kernel evaluate(global char* genes, global const double* args, global double* fitness, global double* vars) {
+void kernel evaluate(global char* genes, global const double* args, global double* fitness) {
 
 	// load arguments
 	int numgenes = args[0];   // numgenes
@@ -55,10 +70,26 @@ void kernel evaluate(global char* genes, global const double* args, global doubl
 	double step = args[2];    // step
 	double numbits = args[3]; // numbits
 	int numvars = args[4];    // numvars
+	int function = args[5];    // function
+	
+	// buffer to keep inermedia calcs
+	double vars[3200];
 	
 	grayToBinary(genes, numgenes);
-	decode(vars, genes, numgenes, numvars, xmin, step, numbits); 
-	double f = schwefel(vars, numvars);
+	decode(&vars, genes, numgenes, numvars, xmin, step, numbits); 
+	double f = schwefel(&vars, numvars);
+	
+	switch (function) {
+		case 1: {
+			f = schwefel(vars, numvars);
+			break;
+		}
+		case 5: {
+			f = rosenbrock(vars, numvars);
+			break;
+		}
+	} 	
 	
 	fitness[get_global_id(0)] = 1.0 / (1.0 + f);
 }
+

@@ -24,6 +24,7 @@ public:
 
 	Config * config;
 	double mutation_rate;
+	double mutation_prop;
 	unsigned short num_parents;
 	unsigned short tournament_size;
 	double exchange_probability;

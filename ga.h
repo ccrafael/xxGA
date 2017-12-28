@@ -8,6 +8,7 @@
 #define GENETICALGORITHM_H_
 
 #include <functional>
+#include <chrono>
 #include <stdexcept>
 #include "log4cxx/logger.h"
 #include "OperatorFactory.h"
@@ -29,6 +30,9 @@ class GA {
 	std::function<void(IContainer*)> mutation;
 	std::function<IContainer* (Population*, IContainer*)> replacementSelection;
 	std::function<void(Problem*, IContainer*)> evaluation;
+
+	std::chrono::time_point<std::chrono::steady_clock> t0;
+	std::chrono::time_point<std::chrono::steady_clock> t1;
 
 protected:
 	Population * population;

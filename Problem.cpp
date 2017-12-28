@@ -28,5 +28,5 @@ Problem::~Problem() {
 
 void Problem::clevaluate(IContainer * individuals) {
 		LOG4CXX_ERROR(logger, "Calling OpenCL implementation. But OpenCL was not implemented.");
-		throw std::runtime_error("npoint not implemented yet ");
+		throw std::runtime_error("OpenCL evaluation not implemented.");
 }

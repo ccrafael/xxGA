@@ -44,6 +44,7 @@ void GA::init() {
 
 	// evaluate the individuals using the evaluation operator.
 	// Evaluation TODO how to add openCL here?
+
 	this->evaluation(problem, individuals);
 
 	population = new Population();
@@ -64,23 +65,39 @@ void GA::evolve(int generations) {
 	for (int i = 0; i < generations; i++) {
 
 		// Selection
+		t0 = chrono::steady_clock::now();
 		IContainer * parents = this->parentSelection(population);
+		t1 = chrono::steady_clock::now();
+		output->selection(chrono::duration<double, milli>(t1 - t0).count());
 
 		// Crossover
+		t0 = chrono::steady_clock::now();
 		IContainer * offspring = this->crossover(parents, generation);
+		t1 = chrono::steady_clock::now();
+		output->crossover(chrono::duration<double, milli>(t1 - t0).count());
 
 		// Mutation
+		t0 = chrono::steady_clock::now();
 		this->mutation(offspring);
+		t1 = chrono::steady_clock::now();
+		output->mutation(chrono::duration<double, milli>(t1 - t0).count());
 
 		// Evaluation TODO how to add openCL here?
+		t0 = chrono::steady_clock::now();
 		this->evaluation(problem, offspring);
+		t1 = chrono::steady_clock::now();
+		output->eval(chrono::duration<double, milli>(t1 - t0).count());
 
 		// Replacement selection
+		t0 = chrono::steady_clock::now();
 		IContainer * notSurvivors = this->replacementSelection(population,
 				offspring);
 
 		// remove the memory consumed by the removed individuals
 		this->getPopulation()->remove(notSurvivors);
+
+		t1 = chrono::steady_clock::now();
+		output->replacement(chrono::duration<double, milli>(t1 - t0).count());
 
 		// print the current status
 		this->output->print_generation(generation, population);

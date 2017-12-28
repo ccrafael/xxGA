@@ -1,6 +1,9 @@
 /*
  * Util.h
  *
+ * TODO refactor all random generations the cost to get a random this way
+ *  is currently quite high.
+ *
  *  Created on: 11-dic-2008
  *      Author: rafael
  */
@@ -35,9 +38,10 @@ public:
 	 */
 	static double rand();
 
+
 	static bool should_be_changed(double rate);
 
-	static int b2i(vector<bool> array, int offset, int length) ;
+	static unsigned long b2i(vector<bool> array, int offset, int length) ;
 
 	/**
 	 * Get random numbers in the range [0, range) without repetitions.

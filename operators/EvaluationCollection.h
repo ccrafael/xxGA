@@ -15,8 +15,12 @@
 #include "../GenotypeBit.h"
 #include "../exception/OperatorException.h"
 #include "../Environment.h"
+#include "log4cxx/logger.h"
 
 namespace evaluation {
+
+
+static log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("EvaluationCollection"));
 
 /*!
  * Do nothing.
@@ -47,6 +51,16 @@ const std::function<void(Problem*, IContainer*)> basicevaluation = [](Problem* p
 const std::function<void(Problem*, IContainer*)> openclevaluation = [](Problem* p, IContainer* g) {
 
 	p->clevaluate(g);
+
+	if (logger->isDebugEnabled()) {
+		std::for_each(g->begin(), g->end(),
+				[p](Individual * i) {
+					cout << p->evaluate(i) << endl;
+
+				});
+	}
+
+
 };
 
 }

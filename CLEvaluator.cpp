@@ -14,12 +14,66 @@ int CLEvaluator::count = 0;
 std::mutex CLEvaluator::sync_mutex;
 std::condition_variable CLEvaluator::sync;
 
-CLEvaluator::CLEvaluator(Config * config, double * args, int nargs, int num_threads) {
+CLEvaluator::CLEvaluator(Config * config, double * args, int nargs,
+		int num_threads, int max_individuals) {
 
 	this->args = args;
 	this->num_threads = num_threads;
 	this->nargs = nargs;
+	this->max_individuals = max_individuals;
 
+	// init the gpu
+	init_gpu(config);
+
+	// create a executor for each thread
+	for (int i = 0; i < num_threads; i++) {
+		// create the kernels
+		create_kernels(config, i);
+	}
+}
+
+void CLEvaluator::create_kernels(Config * config, int i) {
+	cl_int err = CL_SUCCESS;
+	int genes = args[0];
+	int numvars = args[4];
+	int num_individuals = max_individuals / num_threads;
+
+	executor * e = new executor;
+
+	// create host memory
+	e->host_genotype = new char[num_individuals * genes];
+	e->host_fitness = new double[num_individuals];
+
+	e->buffer_genotype = new cl::Buffer(*clcontext,
+	CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+			sizeof(cl_char) * genes * num_individuals, e->host_genotype);
+
+	// buffer for int args
+	e->buffer_args = new cl::Buffer(*clcontext,
+	CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(cl_double) * nargs, args);
+
+	// buffer to collect the fitness
+	e->buffer_fitness = new cl::Buffer(*clcontext,
+	CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+			sizeof(cl_double) * num_individuals, e->host_fitness);
+
+	//create queue to which we will push commands for the device.
+	e->queue = new cl::CommandQueue(*clcontext, default_device);
+
+	e->kernel_add = new cl::Kernel(*program, "evaluate", &err);
+
+	// buffer for genotype and N individuals
+
+	e->kernel_add->setArg(0, *e->buffer_genotype);
+	e->kernel_add->setArg(1, *e->buffer_args);
+	e->kernel_add->setArg(2, *e->buffer_fitness);
+
+	executors_queue.push(e);
+
+	LOG4CXX_INFO(logger, "OpenCL initialized.");
+}
+
+void CLEvaluator::init_gpu(Config * config) {
 	//get all platforms (drivers)
 	cl::Platform::get(&all_platforms);
 	if (all_platforms.size() == 0) {
@@ -27,10 +81,11 @@ CLEvaluator::CLEvaluator(Config * config, double * args, int nargs, int num_thre
 				" No OpenCL platforms found. Check OpenCL installation!");
 	}
 
-	cl::Platform default_platform = all_platforms[config->getInt("Platform")];
+	default_platform = all_platforms[config->getInt("Platform")];
 
 	LOG4CXX_INFO(logger,
 			"OpenCL enabled using platform: " << default_platform.getInfo<CL_PLATFORM_NAME>());
+
 	LOG4CXX_INFO(logger, "\n");
 
 	//get default device of the default platform
@@ -39,7 +94,7 @@ CLEvaluator::CLEvaluator(Config * config, double * args, int nargs, int num_thre
 		throw runtime_error(
 				"No OpenCL devices found. Check OpenCL installation! ");
 	}
-	cl::Device default_device = all_devices[config->getInt("Device")];
+	default_device = all_devices[config->getInt("Device")];
 
 	LOG4CXX_INFO(logger,
 			"Using device: " << default_device.getInfo<CL_DEVICE_NAME>());
@@ -49,136 +104,97 @@ CLEvaluator::CLEvaluator(Config * config, double * args, int nargs, int num_thre
 	clcontext = new cl::Context( { default_device });
 
 	string kernel_source = kernel_code(config->getProperty("KernelCodeFile"));
-	LOG4CXX_INFO(logger, "Adding kernel source: \n"<<kernel_source);
+	LOG4CXX_INFO(logger, "Adding kernel source: \n" << kernel_source);
 
 	sources.push_back( { kernel_source.c_str(), kernel_source.length() });
 
 	program = new cl::Program(*clcontext, sources);
 
+	LOG4CXX_TRACE(logger, "Build the kernel online.");
+
 	if (program->build( { default_device }) != CL_SUCCESS) {
 		std::stringstream out;
+
+		LOG4CXX_TRACE(logger,
+				"Something weird happened." << program->getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device));
 		out << " Error building: "
 				<< program->getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device)
 				<< "\n";
 
 		throw runtime_error(out.str());
 	}
-
-	//create queue to which we will push commands for the device.
-	queue = new cl::CommandQueue(*clcontext, default_device);
-
 }
 
 void CLEvaluator::evaluate(IContainer * container) {
 
 	std::unique_lock<std::mutex> lk(sync_mutex);
+	executor * e = this->executors_queue.front();
+	this->executors_queue.pop();
+	lk.unlock();
 
-	// copy the references to be evaluated
-	std::copy (container->begin(), container->end(), std::back_inserter(to_eval));
+	clevaluate (container , e);
 
-	// check if evaluation is possible
-	if (count < num_threads - 1) {
-		count++;
-		sync.wait(lk);
-	} else {
-		// evaluate all
-		evaluate();
-
-		// wake up all threads
-		count = 0;
-		sync.notify_all();
-	}
+	lk.lock();
+	this->executors_queue.push(e);
+	lk.unlock();
 
 }
 
-void CLEvaluator::evaluate() {
-	int num_individuals = to_eval.size();
+void CLEvaluator::clevaluate(IContainer * container, executor * e) {
+	int num_individuals = container->size();
 	int genes = args[0];
-	int numvars = args[4];
 
 	// create buffers on the device
 	// TODO review if buffer should be created only once
-
-	// buffer for genotype and N individuals
-	cl::Buffer buffer_genotype(*clcontext, CL_MEM_READ_WRITE,
-			sizeof(cl_char) * genes * num_individuals);
-
-	// buffer for int args
-	cl::Buffer buffer_args(*clcontext, CL_MEM_READ_WRITE,
-			sizeof(cl_double) * nargs);
-
-	// buffer to collect the fitness
-	cl::Buffer buffer_fitness(*clcontext, CL_MEM_READ_WRITE,
-			sizeof(cl_double) * num_individuals);
-
-	// TODO find out a better way to reserve a variable buffer to decode inds
-	cl::Buffer buffer_decode(*clcontext, CL_MEM_READ_WRITE,
-			sizeof(cl_double) * num_individuals * numvars);
-
-	cl_int err = CL_SUCCESS;
-
-	char genotype[num_individuals * genes];
+	LOG4CXX_TRACE(logger, "Start preparing buffers for "<< num_individuals);
 
 	// dump all the data into a unique array to pass to the gpu
 	for (int i = 0; i < num_individuals; i++) {
-		Individual * ind = to_eval.at(i);
+		Individual * ind = container->at(i);
 
 		// this  representation is gray if we want to compare
 		// opencl will decode to binary, gpu must works
 		GenotypeBit * g = ind->get_genotype();
 
 		for (int j = 0; j < genes; j++) {
-			genotype[(i * genes) + j] = g->at(j);
+			e->host_genotype[(i * genes) + j] = g->at(j);
 		}
+
 	}
+
+	LOG4CXX_TRACE(logger, "Data ready. ");
 
 	//write the buffers to the device
-	queue->enqueueWriteBuffer(buffer_genotype, CL_TRUE, 0,
-			sizeof(cl_char) * num_individuals * genes, genotype);
-	queue->enqueueWriteBuffer(buffer_args, CL_TRUE, 0,
-			sizeof(cl_double) * nargs, args);
+	e->queue->enqueueWriteBuffer(*e->buffer_genotype, CL_TRUE, 0,
+			sizeof(cl_char) * num_individuals * genes, e->host_genotype);
 
-	cl::Kernel kernel_add(*program, "evaluate", &err);
+	LOG4CXX_TRACE(logger, "Write genotype data to device. ");
 
-	if (err != CL_SUCCESS) {
-		throw runtime_error("Error creating kernel.");
-	}
-
-	kernel_add.setArg(0, buffer_genotype);
-	kernel_add.setArg(1, buffer_args);
-	kernel_add.setArg(2, buffer_fitness);
-
-	// decode buffer not needed but we need it for internal calcs
-	kernel_add.setArg(3, buffer_decode);
-
-	queue->enqueueNDRangeKernel(kernel_add, cl::NullRange,
+	e->queue->enqueueNDRangeKernel(*e->kernel_add, cl::NullRange,
 			cl::NDRange(num_individuals), cl::NullRange);
 
-	if (queue->flush() != CL_SUCCESS) {
+	LOG4CXX_TRACE(logger, "Enqueue ND range kernel.  ");
+
+	if (e->queue->finish() != CL_SUCCESS) {
 		throw runtime_error("Error executing kernel.");
 	}
 
-	double fitness[num_individuals];
-	double decode[num_individuals * numvars];
-
 	//read the results
-	queue->enqueueReadBuffer(buffer_fitness, CL_TRUE, 0,
-			sizeof(cl_double) * num_individuals, fitness);
+	e->queue->enqueueMapBuffer(*e->buffer_fitness, CL_TRUE, CL_MAP_WRITE, 0,
+			sizeof(cl_double) * num_individuals, 0);
 
-	//TODO find out a better way to pass a decode buffer
-	queue->enqueueReadBuffer(buffer_decode, CL_TRUE, 0,
-			sizeof(cl_double) * num_individuals * numvars, decode);
+	LOG4CXX_TRACE(logger, "Read fitness buffer.");
 
 	for (int i = 0; i < num_individuals; i++) {
-		LOG4CXX_DEBUG(logger, "Opencl evaluation: "<<i<<": " << fitness[i]);
+		LOG4CXX_DEBUG(logger,
+				"Opencl evaluation: "<<i<<": " << e->host_fitness[i]);
 
-		Individual * ind = to_eval.at(i);
+		Individual * ind = container->at(i);
 
-		ind->fitness(fitness[i]);
+		ind->fitness(e->host_fitness[i]);
 		ind->setEvaluated(true);
 	}
-
-	to_eval.clear();
+	LOG4CXX_TRACE(logger, "Copied fitness values. ");
 }
 
 string CLEvaluator::kernel_code(string file_path) {
@@ -190,6 +206,20 @@ string CLEvaluator::kernel_code(string file_path) {
 }
 
 CLEvaluator::~CLEvaluator() {
-	// TODO Auto-generated destructor stub
+	while(!this->executors_queue.empty()) {
+		executor * e = this->executors_queue.front();
+		this->executors_queue.pop();
+		delete e->buffer_args;
+		delete e->buffer_fitness;
+		delete e->buffer_genotype;
+		delete e->host_fitness;
+		delete e->host_genotype;
+		delete e->kernel_add;
+		delete e->queue;
+
+		delete e;
+	}
+	delete clcontext;
+	delete program;
 }
 

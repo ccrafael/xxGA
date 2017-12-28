@@ -15,6 +15,8 @@ NumberGenerations = 10000
 # Number of generations before the migration process start
 MigrationEveryGenerations = 10
 
+NumberOffspring = 2
+
 # Migration type
 # 1: Select NumberMigrants randomly
 # 2: select the NumberMigrants worsts individuals
@@ -78,3 +80,6 @@ Elitism = 1
 
 # Generational gap (just in case of steady state model for survivor selection). Range: [1, IndividualsNumber].
 GenerationalGap = 29
+
+# evaluation type, 1 Normal evaluation 2 Use openCL Evaluation
+EvaluationType = 1

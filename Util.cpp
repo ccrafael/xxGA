@@ -12,16 +12,16 @@ using namespace std;
 bool Util::already_init = false;
 
 double Util::rand() {
-	thread_local std::random_device rd; //Will be used to obtain a seed for the random number engine
-	std::mt19937 generator(rd());
-	std::uniform_real_distribution<double> dist(0, 1);
+	thread_local std::random_device rd;
+	thread_local std::mt19937 generator(rd());
+	thread_local std::uniform_real_distribution<double> dist(0, 1);
 
 	return dist(generator);
 }
 
-int Util::b2i(vector<bool> array, int offset, int length) {
-	int valor = 0;
-	int potencia = 1;
+unsigned long Util::b2i(vector<bool> array, int offset, int length) {
+	unsigned long valor = 0;
+	unsigned long potencia = 1;
 	for (int i = length + offset - 1; i >= offset; i--) {
 		int bit = array[i] ? 1 : 0;
 		valor += bit * potencia;
@@ -39,8 +39,8 @@ vector<int> Util::random(int range, int size) {
 	int j = 0;
 	bool present = false;
 
-	thread_local std::random_device rd; //Will be used to obtain a seed for the random number engine
-	std::mt19937 generator(rd());
+	thread_local std::random_device rd;
+	thread_local std::mt19937 generator(rd());
 	std::uniform_int_distribution<int> dis(0, range - 1);
 
 	while (j < size) {
@@ -65,8 +65,7 @@ int Util::rand(int r) {
 	// need to be created every time or there will be problems with the
 	// random generations
 	thread_local std::random_device rd; //Will be used to obtain a seed for the random number engine
-
-	std::mt19937 generator(rd());
+	thread_local std::mt19937 generator(rd());
 	std::uniform_int_distribution<int> dis(0, r - 1);
 
 	return dis(generator);

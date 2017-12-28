@@ -69,14 +69,20 @@ int main(int argc, char** argv) {
 		Config config(filename);
 
 		// save some global vars for fast access of the operators
+		// TODO redesing this
 		Environment * env = Environment::instance();
 		env->config = &config;
 		env->mutation_rate = config.getDouble("MutationRate");
+		env->mutation_prop =  config.getDouble("MutationProbability");
+
 		env->num_parents = config.getInt("NumParents");
 		env->tournament_size = config.getInt("TournamentSize");
+
 		env->exchange_probability = config.getDouble("ExchangeProbability");
+
 		env->num_migrants = config.getInt("NumberMigrants");
 		env->num_offspring = config.getInt("NumberOffspring");
+
 
 		LOG4CXX_INFO(logger, "Loading problem and operators.");
 

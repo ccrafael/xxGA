@@ -141,6 +141,7 @@ void OperatorFactory_test::setUp(void) {
 	config = new Config(string("utest/config"));
 	context->config = config;
 	context->num_parents = config->getInt("NumParents");
+	context->num_offspring = config->getInt("NumberOffspring");
 
 	problem = new ParseFunctionProblem(config);
 	factory = new OperatorFactory(config);

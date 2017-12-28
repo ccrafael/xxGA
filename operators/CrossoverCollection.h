@@ -51,7 +51,7 @@ const std::function<IContainer* (IContainer*, int)> onepoint =
 			IContainer * container = new IContainer();
 			Environment *context = Environment::instance();
 
-			while (container->size() < context->num_offspring) {
+			while ((int)container->size() < context->num_offspring) {
 				vector<int> parents = Util::random(i->size(), 2);
 				GenotypeBit * p1 = i->at(parents[0])->get_genotype();
 				GenotypeBit * p2 = i->at(parents[1])->get_genotype();
@@ -115,7 +115,7 @@ const std::function<IContainer* (IContainer*, int)> uniformcrossover =
 
 const std::function<IContainer* (IContainer*, int)> npoint =
 		[](IContainer* i, int g) {
-			throw std::runtime_error("npoint not implemented yet ");
+			throw std::runtime_error("npoint crossover not implemented yet ");
 			return nullptr;
 		};
 

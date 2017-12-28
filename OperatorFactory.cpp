@@ -47,7 +47,15 @@ std::function<IContainer* (IContainer*, int)> OperatorFactory::createCrossoverOp
  * @return A new mutation operator.
  */
 std::function<void(IContainer*)> OperatorFactory::createMutationOperator() {
-	return mutation::basic;
+
+	switch (config->getInt("MutationType")) {
+	case 1:
+		return mutation::basic;
+	case 2:
+		return mutation::rate;
+	default:
+		return mutation::basic;
+	}
 }
 
 /*

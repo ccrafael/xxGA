@@ -78,3 +78,5 @@ Elitism = 1
 
 # Generational gap (just in case of steady state model for survivor selection). Range: [1, IndividualsNumber].
 GenerationalGap = 29
+
+EvaluationType = 1

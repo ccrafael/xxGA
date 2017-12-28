@@ -21,6 +21,21 @@ Output::Output(Problem* problem, Config* config) {
 	this->problem = problem;
 	this->config = config;
 
+	this->eval_count = 0;
+	this->eval_sum = 0;
+
+	this->selection_count = 0;
+	this->selection_sum = 0;
+
+	this->crossover_count = 0;
+	this->crossover_sum = 0;
+
+	this->mutation_count = 0;
+	this->mutation_sum = 0;
+
+	this->replacement_count = 0;
+	this->replacement_sum = 0;
+
 	this->numgen_to_print = config->getInt("OuputEachGenerations");
 
 	time_t rawtime;
@@ -45,11 +60,10 @@ Output::Output(Problem* problem, Config* config) {
 }
 
 void Output::print_header() {
-
 	this->generation_file << "thread_id" << SEPARATOR << "generation"
 			<< SEPARATOR << "fitness" << SEPARATOR << "mean_fitness"<< endl;
-
 }
+
 /*
  * print the current status to the file.
  * A line with this format will be printed to the output file.
@@ -74,7 +88,6 @@ void Output::print_generation(int generation, Population* population) {
 		std::lock_guard<std::mutex> guard(m);
 		this->generation_file << this_id << SEPARATOR << generation << SEPARATOR
 				<< individual->fitness() << SEPARATOR << mean << endl;
-
 	}
 }
 
@@ -105,10 +118,16 @@ void Output::print_conf() {
 			<< config->getProperty("CrossoverType") << endl;
 	this->solution_file << "CrossoverType:       "
 			<< config->getProperty("CrossoverType") << endl;
+	this->solution_file << "MutationType:        "
+				<< config->getProperty("MutationType") << endl;
 	this->solution_file << "MutationRate:        "
 			<< config->getProperty("MutationRate") << endl;
+	this->solution_file << "MutationProbability: "
+				<< config->getProperty("MutationProbability") << endl;
 	this->solution_file << "SurvivorSelectionType: "
 			<< config->getProperty("SurvivorSelectionType") << endl;
+	this->solution_file << "EvaluationType:       "
+				<< config->getProperty("EvaluationType") << endl;
 }
 
 void Output::print_final_results(Population* population) {
@@ -131,13 +150,51 @@ void Output::print(Individual * individual) {
 			<< "] final solution: [" << problem->decode(individual) << "]"
 			<< endl;
 	this->solution_file << "Time:         [" << time()/1000 << "] s" << endl;
+
+	this->solution_file << "Sele time avg:[" << (selection_sum/selection_count)/1000 << "] s" << endl;
+	this->solution_file << "Cros time avg:[" << (crossover_sum/crossover_count)/1000 << "] s" << endl;
+	this->solution_file << "Muta time avg:[" << (mutation_sum/mutation_count)/1000 << "] s" << endl;
+	this->solution_file << "Eval time avg:[" << (eval_sum/eval_count)/1000 << "] s" << endl;
+	this->solution_file << "Repl time avg:[" << (replacement_sum/replacement_count)/1000 << "] s" << endl;
 }
+
 void Output::start() {
 	t0 = chrono::steady_clock::now();
 }
 
 void Output::stop() {
 	t1 = chrono::steady_clock::now();
+}
+
+//
+void Output::eval(double time) {
+	std::lock_guard<std::mutex> guard(m);
+	eval_count ++;
+	eval_sum += time;
+}
+
+void Output::selection(double time) {
+	std::lock_guard<std::mutex> guard(m);
+	selection_count ++;
+	selection_sum += time;
+}
+
+void Output::mutation(double time) {
+	std::lock_guard<std::mutex> guard(m);
+	mutation_count ++;
+	mutation_sum += time;
+}
+
+void Output::replacement(double time) {
+	std::lock_guard<std::mutex> guard(m);
+	replacement_count ++;
+	replacement_sum += time;
+}
+
+void Output::crossover(double time) {
+	std::lock_guard<std::mutex> guard(m);
+	crossover_count ++;
+	crossover_sum += time;
 }
 
 /*

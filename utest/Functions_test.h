@@ -57,7 +57,7 @@ void Functions_test::test(void) {
 	Individual * individual = new Individual(genotype, 0);
 
 	cout << "----->" << individual << testObj->decode(individual) << endl;
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0007806, testObj->evaluate(individual),
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0012273, testObj->evaluate(individual),
 			0.0000001);
 	delete individual;
 	delete genotype;
@@ -79,7 +79,7 @@ void Functions_test::test(void) {
 	individual = new Individual(genotype, 0);
 
 	cout << "----->" << individual << testObj->decode(individual) << endl;
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0008880994, testObj->evaluate(individual),
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.00116414, testObj->evaluate(individual),
 			0.0000001);
 	delete individual;
 	delete genotype;
@@ -101,7 +101,7 @@ void Functions_test::test(void) {
 	individual = new Individual(genotype, 0);
 
 	cout << "----->" << individual << testObj->decode(individual) << endl;
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0038759689, testObj->evaluate(individual),
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.001194920, testObj->evaluate(individual),
 			0.0000001);
 	delete individual;
 	delete genotype;
@@ -123,7 +123,7 @@ void Functions_test::test(void) {
 	individual = new Individual(genotype, 0);
 
 	cout << "----->" << individual << testObj->decode(individual) << endl;
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0027322404, testObj->evaluate(individual),
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.001199055, testObj->evaluate(individual),
 			0.0000001);
 	delete individual;
 	delete genotype;

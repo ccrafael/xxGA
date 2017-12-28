@@ -2,21 +2,21 @@ OutputGenerationFile = generation
 OutputSolutionFile = solution
 
 # each N generations the statistics are written
-OuputEachGenerations = 50
+OuputEachGenerations = 100
 
 //ProblemFileConfig = etc/bag.conf
 ProblemFileConfig = etc/function.conf
 
-NumberIsles = 40
+NumberIsles = 8
 
 # Number of individuals for a population into a island
-NumberIndividuals = 25
+NumberIndividuals = 50
 
 # Number of genes for each individual
-NumberGenes = 320
+NumberGenes = 640
 
 # Number of generations
-NumberGenerations = 500000
+NumberGenerations = 50000
 
 # Number of generations before the migration process start
 MigrationEveryGenerations = 1000
@@ -38,10 +38,10 @@ NumberMigrants = 5
 # 4: Tournament selection
 ParentSelectionType = 4
 
-NumParents = 2
+NumParents = 12
 
 # Expected number of offspring 
-NumberOffspring = 2
+NumberOffspring = 48
 
 # Tournament size (just in case of tournament selection). Range: [2,IndividualsNumber].
 TournamentSize = 5
@@ -58,10 +58,16 @@ CrossoverPointsNumber = 3
 # Exchange probability (just in case of Parameterized Uniform Crossover)
 ExchangeProbability = 0.5
 
+# 1 basic, 2 rate
+MutationType=2
+
 # Mutation rate for each gen, remember for each gen so if a individual has N gens the cumulated probability 
 # that an individual get a mutation will be: (1-(1-MutationRate)^NumGenes) therefore
 # this value should be a low rate if the number of genes is high
-MutationRate = 0.009
+MutationRate = 0.07
+
+# Mutation probability. For MutationType basic. Just one gene will mutate with p=MutationProbability
+MutationProbability=0.0009
 
 # Type of survivor selection:
 # 1: Generational model
@@ -73,4 +79,4 @@ GenerationalGap = 29
 
 
 # evaluation type, 1 Normal evaluation 2 Use openCL Evaluation
-EvaluationType = 1
+EvaluationType = 2

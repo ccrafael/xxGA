@@ -36,22 +36,23 @@ void GA::init() {
 
 	int num_individuals = config->getInt(POPULATION_SIZE_PARAM);
 	int num_genes = config->getInt(NUMBER_OF_GENES_PARAM);
-	IContainer * individuals = new IContainer();
+	IContainer  individuals;
 
+	LOG4CXX_TRACE(logger, "Create "<<num_individuals<<" of size "<<num_genes<<".");
 	for (int i = 0; i < num_individuals; i++) {
-		individuals->push_back(new Individual(num_genes, 0));
+		individuals.push_back(new Individual(num_genes, 0));
 	}
+
+	LOG4CXX_TRACE(logger, "Ind created.");
 
 	// evaluate the individuals using the evaluation operator.
 	// Evaluation TODO how to add openCL here?
-
-	this->evaluation(problem, individuals);
+	this->evaluation(problem, &individuals);
 
 	population = new Population();
-	population->add(individuals);
+	population->add(&individuals);
 
-	// free memory
-	delete individuals;
+	LOG4CXX_DEBUG(logger, "Pop initialized.");
 }
 
 void GA::evolve(int generations) {

@@ -22,9 +22,9 @@ double Util::rand() {
 unsigned long Util::b2i(vector<bool> array, int offset, int length) {
 	unsigned long valor = 0;
 	unsigned long potencia = 1;
+
 	for (int i = length + offset - 1; i >= offset; i--) {
-		int bit = array[i] ? 1 : 0;
-		valor += bit * potencia;
+		valor += array[i] * potencia;
 		potencia *= 2;
 	}
 	return valor;
@@ -35,29 +35,19 @@ bool Util::should_be_changed(double rate) {
 }
 
 vector<int> Util::random(int range, int size) {
-	vector<int> vec;
-	int j = 0;
-	bool present = false;
+
+	set<int> s;
 
 	thread_local std::random_device rd;
 	thread_local std::mt19937 generator(rd());
 	std::uniform_int_distribution<int> dis(0, range - 1);
 
-	while (j < size) {
+	while (s.size() < size) {
 		int r = dis(generator);
-
-		// inline bucle
-		for (unsigned int i = 0; i < vec.size(); i++) {
-			present = (vec[i] == r);
-			if (present) {
-				break;
-			}
-		}
-		if (!present) {
-			vec.push_back(r);
-			j++;
-		}
+		s.insert(r);
 	}
+
+	vector<int> vec(s.begin(), s.end());
 	return vec;
 }
 

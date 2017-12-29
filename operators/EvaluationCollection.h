@@ -53,6 +53,7 @@ const std::function<void(Problem*, IContainer*)> openclevaluation = [](Problem* 
 	p->clevaluate(g);
 
 	if (logger->isDebugEnabled()) {
+		// useful to know that the gpu is calculating the same than the cpu
 		std::for_each(g->begin(), g->end(),
 				[p](Individual * i) {
 					cout << p->evaluate(i) << endl;

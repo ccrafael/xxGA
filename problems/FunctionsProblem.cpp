@@ -44,7 +44,7 @@ std::function<double(vector<double>)> FunctionsProblem::rosenbrock =
 			double val = 0;
 			for (unsigned int i = 0; i < vals.size()-1; i++) {
 				double xi = vals[i];
-				val += 100 * pow(vals[i-1] - pow(xi, 2), 2) + pow(1-xi, 2);
+				val += 100 * pow(vals[i+1] - pow(xi, 2), 2) + pow(1-xi, 2);
 			}
 
 			return val;

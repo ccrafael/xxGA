@@ -72,8 +72,8 @@ void kernel evaluate(global char* genes, global const double* args, global doubl
 	int numvars = args[4];    // numvars
 	int function = args[5];    // function
 	
-	// buffer to keep inermedia calcs
-	double vars[3200];
+	// buffer to keep inermedia calcs this buffer fix max number of vars
+	double vars[100];
 	
 	grayToBinary(genes, numgenes);
 	decode(&vars, genes, numgenes, numvars, xmin, step, numbits); 

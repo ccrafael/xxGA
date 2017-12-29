@@ -12,6 +12,7 @@
 #define UTIL_H_
 
 #include <random>
+#include <set>
 #include <string>
 #include <vector>
 

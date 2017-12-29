@@ -48,6 +48,18 @@ const std::function<IContainer*(Population*, IContainer*)> steadystate =
 			return toremove;
 		};
 
+const std::function<IContainer*(Population*, IContainer*)> ifbetter =
+		[](Population* p, IContainer* group) {
+
+			// just add the new  individuals
+			p->add(group);
+
+			// the get the worst by fitness
+			IContainer * toremove= p->worsts(group->size());
+
+			return toremove;
+		};
+
 } // end namespace replacement
 
 #endif /* OPERATORS_REPLACEMENTCOLLECTION_H_ */

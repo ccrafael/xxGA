@@ -106,7 +106,9 @@ std::function<IContainer* (Population*, IContainer*)> OperatorFactory::createRep
 		LOG4CXX_TRACE(logger, "Replacement: steady state ");
 		return replacement::steadystate;
 	}
-
+	case 3: {
+		return replacement::ifbetter;
+	}
 	default: {
 		LOG4CXX_TRACE(logger, "Replacement: empty ");
 		return replacement::empty;

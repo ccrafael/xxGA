@@ -4,22 +4,22 @@ OutputSolutionFile = solution
 # each N generations the statistics are written
 OuputEachGenerations = 100
 
-//ProblemFileConfig = etc/bag.conf
+#ProblemFileConfig = etc/bag.conf
 ProblemFileConfig = etc/function.conf
 
-NumberIsles = 16
+NumberIsles = 8
 
 # Number of individuals for a population into a island
-NumberIndividuals = 100
+NumberIndividuals = 128
 
 # Number of genes for each individual
-NumberGenes = 640
+NumberGenes = 160
 
 # Number of generations
-NumberGenerations = 100000
+NumberGenerations = 500000
 
 # Number of generations before the migration process start
-MigrationEveryGenerations = 2000
+MigrationEveryGenerations = 1000
 
 # Migration type
 # 1: Select NumberMigrants randomly
@@ -28,7 +28,7 @@ MigrationEveryGenerations = 2000
 MigrationType = 1
 
 # Number of migrants 
-NumberMigrants = 5
+NumberMigrants = 8
 
 # Type of parent selection (method of constructing the mating pool):
 #  0: basic seleccion (two parents randomly 
@@ -38,10 +38,10 @@ NumberMigrants = 5
 # 4: Tournament selection
 ParentSelectionType = 4
 
-NumParents = 16
+NumParents = 32
 
 # Expected number of offspring 
-NumberOffspring = 64
+NumberOffspring = 128
 
 # Tournament size (just in case of tournament selection). Range: [2,IndividualsNumber].
 TournamentSize = 5
@@ -59,12 +59,12 @@ CrossoverPointsNumber = 3
 ExchangeProbability = 0.5
 
 # 1 basic, 2 rate
-MutationType=2
+MutationType = 2
 
 # Mutation rate for each gen, remember for each gen so if a individual has N gens the cumulated probability 
 # that an individual get a mutation will be: (1-(1-MutationRate)^NumGenes) therefore
 # this value should be a low rate if the number of genes is high
-MutationRate = 0.0005
+MutationRate = 0.004
 
 # Mutation probability. For MutationType basic. Just one gene will mutate with p=MutationProbability
 MutationProbability=0.0009
@@ -72,7 +72,8 @@ MutationProbability=0.0009
 # Type of survivor selection:
 # 1: Generational model
 # 2: Steady state model
-SurvivorSelectionType = 2
+# 3: ifbetter: remove worst from parents + offspring
+SurvivorSelectionType = 3
 
 # Generational gap (just in case of steady state model for survivor selection). Range: [1, IndividualsNumber].
 GenerationalGap = 29

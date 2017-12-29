@@ -116,8 +116,8 @@ void Output::print_conf() {
 			<< config->getProperty("TournamentSize") << endl;
 	this->solution_file << "CrossoverType:       "
 			<< config->getProperty("CrossoverType") << endl;
-	this->solution_file << "CrossoverType:       "
-			<< config->getProperty("CrossoverType") << endl;
+	this->solution_file << "NumberOffspring:     "
+			<< config->getProperty("NumberOffspring") << endl;
 	this->solution_file << "MutationType:        "
 				<< config->getProperty("MutationType") << endl;
 	this->solution_file << "MutationRate:        "

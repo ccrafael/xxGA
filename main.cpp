@@ -95,10 +95,6 @@ int main(int argc, char** argv) {
 		// print the header
 		output.print_header();
 
-		LOG4CXX_INFO(logger, "Creating islands.");
-
-		// TODO opencl should be problem specific or algorithm common??
-		// TODO move this to a opencl initialization function or samething like that
 
 		int num_islands = config.getInt("NumberIsles");
 		int topology = config.getInt("Topology");
@@ -111,6 +107,11 @@ int main(int argc, char** argv) {
 			// the time will include also the algorithm initialization phase
 			// note it will not include the config reading and problem instance creation
 			output.start();
+
+			LOG4CXX_INFO(logger, "Creating islands.");
+
+			// TODO opencl should be problem specific or algorithm common??
+			// TODO move this to a opencl initialization function or samething like that
 
 			std::vector<Island *> islands;
 

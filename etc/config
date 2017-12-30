@@ -1,5 +1,5 @@
 # Number of executions of the whole algorithm
-executions=30
+executions=5
 
 OutputGenerationFile = generation
 OutputSolutionFile = solution--
@@ -15,7 +15,7 @@ NumberIsles = 8
 # 1 ring only connected to the right
 # 2 ring connected both sides
 # 3 all with all
-Topology = 1
+Topology = 2
 
 # Number of individuals for a population into a island
 NumberIndividuals = 128
@@ -33,16 +33,16 @@ MigrationEveryGenerations = 1000
 # 1: Select NumberMigrants randomly
 # 2: select the NumberMigrants worsts individuals
 # 3: select the NumberMigrants best individuals
-EmigrationType = 1
+EmigrationType = 2
 
 # Number of migrants 
-NumberMigrants = 16
+NumberMigrants = 8
 
 # Migration type
 # 1: Select NumberMigrants randomly
 # 2: select the NumberMigrants worsts individuals
 # 3: select the NumberMigrants best individuals
-ImmigrationType = 1
+ImmigrationType = 3
 
 # Type of parent selection (method of constructing the mating pool):
 #  0: basic seleccion (two parents randomly 

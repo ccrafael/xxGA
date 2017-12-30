@@ -62,7 +62,7 @@ Output::Output(Problem* problem, Config* config) {
 }
 
 void Output::print_header() {
-	this->generation_file << "execution"<<"thread_id" << SEPARATOR << "generation"
+	this->generation_file << "execution"<< SEPARATOR <<"thread_id" << SEPARATOR << "generation"
 			<< SEPARATOR << "fitness" << SEPARATOR << "mean_fitness"<< endl;
 }
 

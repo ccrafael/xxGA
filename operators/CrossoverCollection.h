@@ -64,10 +64,8 @@ const std::function<IContainer* (IContainer*, int)> onepoint =
 				GenotypeBit newGenotype2;
 
 				for (int i = 0; i < size; i++) {
-
-					newGenotype1.push_back( i<cross_point?p1->at(i):p2->at(2));
-					newGenotype2.push_back( i>cross_point?p1->at(i):p2->at(2));
-
+					newGenotype1.push_back( i<cross_point?p1->at(i):p2->at(i));
+					newGenotype2.push_back( i>cross_point?p1->at(i):p2->at(i));
 				}
 
 				// be careful individual create its own copy
@@ -100,8 +98,8 @@ const std::function<IContainer* (IContainer*, int)> uniformcrossover =
 			for (int i = 0; i < size; i++) {
 				double p = Util::rand();
 
-				newGenotype1.push_back( p < context->exchange_probability?p1->at(i):p2->at(2));
-				newGenotype2.push_back( p > context->exchange_probability?p1->at(i):p2->at(2));
+				newGenotype1.push_back( p < context->exchange_probability?p1->at(i):p2->at(i));
+				newGenotype2.push_back( p > context->exchange_probability?p1->at(i):p2->at(i));
 
 			}
 

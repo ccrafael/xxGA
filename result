@@ -1,0 +1,33 @@
+#!/usr/bin/python
+import sys
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.mlab
+
+path_to_csv = sys.argv[1]
+data = np.genfromtxt(path_to_csv, dtype=float, delimiter=',', names=True)
+
+x = np.unique(data['generation'])
+
+f, ax = plt.subplots()
+plt.title("Population fitness evolution")
+ax.set_ylabel('fitnes 1/(1 + f(x))')
+ax.set_xlabel('Generacion')
+
+#plt.xscale('log')
+
+mean = matplotlib.mlab.rec_groupby(data, ('generation',), (('mean_fitness',np.mean,'avg_mean'),))
+best = matplotlib.mlab.rec_groupby(data, ('generation',), (('fitness',np.max,'max_fitness'),))
+
+#result2 = matplotlib.mlab.rec_groupby(data, ('generation',), (('stdev_fitness',np.mean,'avg_stddev'),))
+# line1, = ax.plot(x, result['avg_mean'], label='fitness avg')
+line1, = ax.plot(x, mean['avg_mean'], label='fitness mean')
+line2, = ax.plot(x, best['max_fitness'], label='best fitness')
+
+# line2, = ax.plot(x, result2['avg_stddev'], label='fitness stdev')
+
+# enable legend
+plt.legend()
+
+# show me the chart
+plt.show()

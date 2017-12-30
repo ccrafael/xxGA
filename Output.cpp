@@ -36,6 +36,8 @@ Output::Output(Problem* problem, Config* config) {
 	this->replacement_count = 0;
 	this->replacement_sum = 0;
 
+	this->execution = 0;
+
 	this->numgen_to_print = config->getInt("OuputEachGenerations");
 
 	time_t rawtime;
@@ -60,7 +62,7 @@ Output::Output(Problem* problem, Config* config) {
 }
 
 void Output::print_header() {
-	this->generation_file << "thread_id" << SEPARATOR << "generation"
+	this->generation_file << "execution"<<"thread_id" << SEPARATOR << "generation"
 			<< SEPARATOR << "fitness" << SEPARATOR << "mean_fitness"<< endl;
 }
 
@@ -86,7 +88,7 @@ void Output::print_generation(int generation, Population* population) {
 		LOG4CXX_TRACE(logger, "Print.");
 
 		std::lock_guard<std::mutex> guard(m);
-		this->generation_file << this_id << SEPARATOR << generation << SEPARATOR
+		this->generation_file <<execution<<SEPARATOR << this_id << SEPARATOR << generation << SEPARATOR
 				<< individual->fitness() << SEPARATOR << mean << endl;
 	}
 }
@@ -106,8 +108,10 @@ void Output::print_conf() {
 			<< config->getProperty("MigrationEveryGenerations") << endl;
 	this->solution_file << "NumberMigrants:      "
 			<< config->getProperty("NumberMigrants") << endl;
-	this->solution_file << "MigrationType:       "
-			<< config->getProperty("MigrationType") << endl;
+	this->solution_file << "EmigrationType:       "
+			<< config->getProperty("EmigrationType") << endl;
+	this->solution_file << "ImmigrationType:       "
+				<< config->getProperty("ImmigrationType") << endl;
 	this->solution_file << "ParentSelectionType: "
 			<< config->getProperty("ParentSelectionType") << endl;
 	this->solution_file << "NumParents:          "
@@ -202,4 +206,8 @@ void Output::crossover(double time) {
  */
 double Output::time() {
 	return chrono::duration<double, milli>(t1 - t0).count();
+}
+
+void Output::add_execution() {
+	execution++;
 }

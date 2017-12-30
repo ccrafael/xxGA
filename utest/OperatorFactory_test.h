@@ -50,10 +50,12 @@ private:
 void OperatorFactory_test::test(void) {
 
 	cout << " select the parents " << endl;
-	std::function<IContainer* (Population*)> parentselection =
+	std::function<IContainer* (Population*, int)> parentselection =
 			factory->createParentSelectionOperator();
 
-	IContainer * parents = parentselection(population);
+
+
+	IContainer * parents = parentselection(population, 2);
 
 	CPPUNIT_ASSERT(parents != nullptr);
 	CPPUNIT_ASSERT_EQUAL(2, (int )parents->size());
@@ -109,7 +111,7 @@ void OperatorFactory_test::test(void) {
 
 	IContainer * discard = re(population, offspring);
 	CPPUNIT_ASSERT_EQUAL(2, (int )discard->size());
-	CPPUNIT_ASSERT_EQUAL(12, population->size());
+	CPPUNIT_ASSERT_EQUAL(12, (int)population->size());
 	for_each(discard->begin(), discard->end(), [this,offspring](Individual *i) {
 		CPPUNIT_ASSERT_EQUAL(0, i->birth());
 		CPPUNIT_ASSERT_EQUAL(10, i->get_genotype()->size());
@@ -132,7 +134,7 @@ void OperatorFactory_test::test(void) {
 	delete discard;
 	delete offspring;
 	delete parents;
-	CPPUNIT_ASSERT_EQUAL(10, population->size());
+	CPPUNIT_ASSERT_EQUAL(10, (int) population->size());
 }
 
 void OperatorFactory_test::setUp(void) {
@@ -140,7 +142,6 @@ void OperatorFactory_test::setUp(void) {
 
 	config = new Config(string("utest/config"));
 	context->config = config;
-	context->num_parents = config->getInt("NumParents");
 	context->num_offspring = config->getInt("NumberOffspring");
 
 	problem = new ParseFunctionProblem(config);

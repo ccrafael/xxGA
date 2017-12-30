@@ -1,5 +1,8 @@
+# Number of executions of the whole algorithm
+executions=30
+
 OutputGenerationFile = generation
-OutputSolutionFile = solution
+OutputSolutionFile = solution--
 
 # each N generations the statistics are written
 OuputEachGenerations = 100
@@ -9,14 +12,19 @@ ProblemFileConfig = etc/function.conf
 
 NumberIsles = 8
 
+# 1 ring only connected to the right
+# 2 ring connected both sides
+# 3 all with all
+Topology = 1
+
 # Number of individuals for a population into a island
 NumberIndividuals = 128
 
 # Number of genes for each individual
-NumberGenes = 160
+NumberGenes = 640
 
 # Number of generations
-NumberGenerations = 500000
+NumberGenerations = 50000
 
 # Number of generations before the migration process start
 MigrationEveryGenerations = 1000
@@ -25,10 +33,16 @@ MigrationEveryGenerations = 1000
 # 1: Select NumberMigrants randomly
 # 2: select the NumberMigrants worsts individuals
 # 3: select the NumberMigrants best individuals
-MigrationType = 1
+EmigrationType = 1
 
 # Number of migrants 
-NumberMigrants = 8
+NumberMigrants = 16
+
+# Migration type
+# 1: Select NumberMigrants randomly
+# 2: select the NumberMigrants worsts individuals
+# 3: select the NumberMigrants best individuals
+ImmigrationType = 1
 
 # Type of parent selection (method of constructing the mating pool):
 #  0: basic seleccion (two parents randomly 
@@ -38,13 +52,14 @@ NumberMigrants = 8
 # 4: Tournament selection
 ParentSelectionType = 4
 
-NumParents = 32
+# num parents to produce offspring
+NumParents = 64
 
 # Expected number of offspring 
 NumberOffspring = 128
 
 # Tournament size (just in case of tournament selection). Range: [2,IndividualsNumber].
-TournamentSize = 5
+TournamentSize = 4
 
 # Type of crossover:
 # 1: One-point crossover
@@ -64,7 +79,7 @@ MutationType = 2
 # Mutation rate for each gen, remember for each gen so if a individual has N gens the cumulated probability 
 # that an individual get a mutation will be: (1-(1-MutationRate)^NumGenes) therefore
 # this value should be a low rate if the number of genes is high
-MutationRate = 0.004
+MutationRate = 0.0008
 
 # Mutation probability. For MutationType basic. Just one gene will mutate with p=MutationProbability
 MutationProbability=0.0009
@@ -78,6 +93,5 @@ SurvivorSelectionType = 3
 # Generational gap (just in case of steady state model for survivor selection). Range: [1, IndividualsNumber].
 GenerationalGap = 29
 
-
 # evaluation type, 1 Normal evaluation 2 Use openCL Evaluation
-EvaluationType = 1
+EvaluationType = 2

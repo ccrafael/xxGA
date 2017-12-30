@@ -73,16 +73,10 @@ int main(int argc, char** argv) {
 		Environment * env = Environment::instance();
 		env->config = &config;
 		env->mutation_rate = config.getDouble("MutationRate");
-		env->mutation_prop =  config.getDouble("MutationProbability");
-
-		env->num_parents = config.getInt("NumParents");
+		env->mutation_prop = config.getDouble("MutationProbability");
 		env->tournament_size = config.getInt("TournamentSize");
-
 		env->exchange_probability = config.getDouble("ExchangeProbability");
-
-		env->num_migrants = config.getInt("NumberMigrants");
 		env->num_offspring = config.getInt("NumberOffspring");
-
 
 		LOG4CXX_INFO(logger, "Loading problem and operators.");
 
@@ -101,85 +95,104 @@ int main(int argc, char** argv) {
 		// print the header
 		output.print_header();
 
-		// start a timer to messure the time consumed by the algorithm
-		// the time will include also the algorithm initialization phase
-		// note it will not include the config reading and problem instance creation
-		output.start();
-
 		LOG4CXX_INFO(logger, "Creating islands.");
 
 		// TODO opencl should be problem specific or algorithm common??
 		// TODO move this to a opencl initialization function or samething like that
 
 		int num_islands = config.getInt("NumberIsles");
+		int topology = config.getInt("Topology");
 
-		std::vector<Island *> islands;
+		int executions = config.getInt("executions");
 
-		// vector container stores threads
-		std::vector<std::thread> workers;
+		for (int e = 0; e < executions; e++) {
+			LOG4CXX_INFO(logger, "Starting execution: "<<e);
+			// start a timer to messure the time consumed by the algorithm
+			// the time will include also the algorithm initialization phase
+			// note it will not include the config reading and problem instance creation
+			output.start();
 
-		for (int i = 0; i < num_islands; i++) {
-			Island * island = new Island(i, problem, &operatorFactory, &config,
-					&output, num_islands);
-			islands.push_back(island);
-		}
+			std::vector<Island *> islands;
 
-		LOG4CXX_INFO(logger, "Creating neighborhood.");
-		if (num_islands > 1) {
-			// this connect all the islands as a ring
+			// vector container stores threads
+			std::vector<std::thread> workers;
+
 			for (int i = 0; i < num_islands; i++) {
-				vector<Island*> neihgborhood;
-				int left = i > 0 ? i - 1 : num_islands - 1;
-				int right = i < num_islands - 1 ? i + 1 : 0;
-
-				neihgborhood.push_back(islands[left]);
-				neihgborhood.push_back(islands[right]);
-				islands[i]->set_neighborhood(neihgborhood);
+				Island * island = new Island(i, problem, &operatorFactory,
+						&config, &output, num_islands);
+				islands.push_back(island);
 			}
-		}
 
-		LOG4CXX_INFO(logger, "Launching threads.");
-		// Create the num_islands islands and start the evolution into it
-		for (int i = 0; i < num_islands; i++) {
-			workers.push_back(std::thread([i, islands, logger]() {
+			LOG4CXX_INFO(logger, "Creating neighborhood.");
+			if (num_islands > 1) {
+				// this connect all the islands as a ring
+				for (int i = 0; i < num_islands; i++) {
+					vector<Island*> neihgborhood;
+					if (topology == 1) {
+						int right = i < num_islands - 1 ? i + 1 : 0;
+						neihgborhood.push_back(islands[right]);
 
-				islands[i]->init();
-
-				LOG4CXX_INFO(logger, "Evolving island "<<i<<".");
-
-				// All the interesting things happen here.
-					islands[i]->evolveIsland();
-
-				}));
-
-		}
-
-		// wait for the threads
-		std::for_each(workers.begin(), workers.end(), [](std::thread &t) {
-			t.join();
-		});
-
-		// stop the timer
-		output.stop();
-
-		// print the conf to identify the experiment later
-		output.print_conf();
-
-		LOG4CXX_INFO(logger, "Collecting final results. ");
-		// print the final statistics and the results
-		// all will be written to the file specified in the configuration file.
-		Individual * better = nullptr;
-		std::for_each(islands.begin(), islands.end(),
-				[&output, &better](Island* i) {
-					Population * population = i->getPopulation();
-					output.print_final_results(population);
-					Individual * best = i->best();
-					if (better == nullptr || better->fitness() < best->fitness()) {
-						better = best;
+					} else if (topology == 2) {
+						int left = i > 0 ? i - 1 : num_islands - 1;
+						int right = i < num_islands - 1 ? i + 1 : 0;
+						neihgborhood.push_back(islands[left]);
+						neihgborhood.push_back(islands[right]);
+					} else if (topology == 3) {
+						for (int j = 0; j < num_islands; j++) {
+							if (i != j) {
+								neihgborhood.push_back(islands[j]);
+							}
+						}
 					}
-				});
+					islands[i]->set_neighborhood(neihgborhood);
+				}
+			}
 
-		output.print(better);
+			LOG4CXX_INFO(logger, "Launching threads.");
+			// Create the num_islands islands and start the evolution into it
+			for (int i = 0; i < num_islands; i++) {
+				workers.push_back(std::thread([i, islands, logger]() {
+
+					islands[i]->init();
+
+					LOG4CXX_INFO(logger, "Evolving island "<<i<<".");
+
+					// All the interesting things happen here.
+						islands[i]->evolveIsland();
+
+					}));
+
+			}
+
+			// wait for the threads
+			std::for_each(workers.begin(), workers.end(), [](std::thread &t) {
+				t.join();
+			});
+
+			// stop the timer
+			output.stop();
+
+			// print the conf to identify the experiment later
+			output.print_conf();
+
+			LOG4CXX_INFO(logger, "Collecting final results. ");
+			// print the final statistics and the results
+			// all will be written to the file specified in the configuration file.
+			Individual * better = nullptr;
+			std::for_each(islands.begin(), islands.end(),
+					[&output, &better](Island* i) {
+						Population * population = i->getPopulation();
+						output.print_final_results(population);
+						Individual * best = i->best();
+						if (better == nullptr || better->fitness() < best->fitness()) {
+							better = best;
+						}
+					});
+
+			output.print(better);
+
+			output.add_execution();
+		}// end for executions
 
 	} catch (ConfigurationException &e) {
 		LOG4CXX_ERROR(logger, " Error loading configuration: "<<e.getMsg());

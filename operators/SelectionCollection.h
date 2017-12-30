@@ -28,7 +28,7 @@ namespace selection {
 /**
  * Do nothing.
  */
-const std::function<IContainer* (Population*)> empty = [](Population* pop) {
+const std::function<IContainer* (Population*, unsigned int)> empty = [](Population* pop, unsigned int n) {
 	return new IContainer();
 };
 
@@ -40,17 +40,17 @@ const std::function<IContainer* (Population*)> empty = [](Population* pop) {
  * TODO I think this method has no difference with the basic but that this one
  * allow repetition.
  */
-const std::function<IContainer* (Population*)> tournament =
-		[](Population* pop) {
+const std::function<IContainer* (Population*, unsigned int)> tournament =
+		[](Population* pop,unsigned  int n) {
 			IContainer * container = new IContainer();
 			Environment * context = Environment::instance();
 			int pop_size = (int)pop->size();
 
-			if (context->num_parents > pop->size()) {
+			if (n > pop->size()) {
 				throw invalid_argument("Pop size is smaller than tournament size");
 			}
 
-			while (container->size() < context->num_parents) {
+			while (container->size() < n) {
 				vector<int> tournament = Util::random(pop_size, context->tournament_size);
 
 				// the best is the higher number because population is ordered by fitness
@@ -65,25 +65,10 @@ const std::function<IContainer* (Population*)> tournament =
 /**
  * Select a set of context.num_parents parents randomly and without repetition.
  */
-const std::function<IContainer* (Population*)> basic = [](Population* pop) {
-	IContainer * container = new IContainer();
-	Environment * context = Environment::instance();
-
-	vector<int> selected = Util::random((int)pop->size(), context->num_parents);
-	for (unsigned int i = 0; i < selected.size(); i++) {
-		container->push_back(pop->at(selected.at(i)));
-	}
-
-	return container;
-};
-
-const std::function<IContainer* (Population*)> basicmigration =
-		[](Population* pop) {
+const std::function<IContainer* (Population*, unsigned  int)> basic =
+		[](Population* pop,unsigned  int n) {
 			IContainer * container = new IContainer();
-			Environment * context = Environment::instance();
-
-			// select without repetition
-			vector<int> selected = Util::random((int)pop->size(), context->num_migrants);
+			vector<int> selected = Util::random((int)pop->size(), n);
 			for (unsigned int i = 0; i < selected.size(); i++) {
 				container->push_back(pop->at(selected.at(i)));
 			}
@@ -91,32 +76,47 @@ const std::function<IContainer* (Population*)> basicmigration =
 			return container;
 		};
 
-const std::function<IContainer* (Population*)> worsts = [](Population* pop) {
-	Environment * context = Environment::instance();
-	return pop->worsts(context->num_migrants);
-};
+const std::function<IContainer* (Population*, unsigned  int)> basic_migration =
+		[](Population* pop,unsigned  int n) {
+			IContainer * container = new IContainer();
+			Environment * context = Environment::instance();
 
-const std::function<IContainer* (Population*)> bests = [](Population* pop) {
-	Environment * context = Environment::instance();
-	return pop->bests(context->num_migrants);
-};
+			// select without repetition
+			vector<int> selected = Util::random((int)pop->size(), n);
+			for (unsigned int i = 0; i < selected.size(); i++) {
+				container->push_back(pop->at(selected.at(i)));
+			}
 
-const std::function<IContainer* (Population*)> fitnessproportional =
-		[](Population* pop) {
+			return container;
+		};
+
+const std::function<IContainer* (Population*,unsigned  int)> worsts_migration =
+		[](Population* pop,unsigned  int n) {
+			return pop->worsts(n);
+		};
+
+const std::function<IContainer* (Population*,unsigned  int)> bests_migration =
+		[](Population* pop,unsigned  int n) {
+			return pop->bests(n);
+		};
+
+const std::function<IContainer* (Population*,unsigned  int)> fitnessproportional =
+		[](Population* pop,unsigned  int n) {
 			throw runtime_error("fitnessproportional not implemented yet");
 			return nullptr;
 		};
 
-const std::function<IContainer* (Population*)> stochasticuniversalsampling =
-		[](Population* pop) {
+const std::function<IContainer* (Population*,unsigned  int)> stochasticuniversalsampling =
+		[](Population* pop,unsigned  int n) {
 			throw runtime_error("stochasticuniversalsampling not implemented yet");
 			return nullptr;
 		};
 
-const std::function<IContainer* (Population*)> ranking = [](Population* pop) {
-	throw runtime_error("ranking not implemented yet");
-	return nullptr;
-};
+const std::function<IContainer* (Population*,unsigned  int)> ranking =
+		[](Population* pop,unsigned  int n) {
+			throw runtime_error("ranking not implemented yet");
+			return nullptr;
+		};
 
 } // end namespace selection
 

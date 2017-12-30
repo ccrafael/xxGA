@@ -134,7 +134,7 @@ void Population_test::test(void) {
 	});
 	pop->remove(worsts);
 
-	CPPUNIT_ASSERT_EQUAL(8, pop->size());
+	CPPUNIT_ASSERT_EQUAL(8, (int) pop->size());
 
 	CPPUNIT_ASSERT(worsts->at(0) != pop->at(0));
 	CPPUNIT_ASSERT(worsts->at(0) != pop->at(1));
@@ -146,7 +146,7 @@ void Population_test::test(void) {
 
 	pop->add(worsts);
 
-	CPPUNIT_ASSERT_EQUAL(10, pop->size());
+	CPPUNIT_ASSERT_EQUAL(10, (int) pop->size());
 
 	// be careful for equivalent objects the order of pointers can be different
 	CPPUNIT_ASSERT_EQUAL(worsts->at(0)->fitness(), pop->at(0)->fitness());

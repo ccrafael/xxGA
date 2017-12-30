@@ -113,7 +113,7 @@ double Population::stdev_fitness(double mean) {
 	return std::sqrt(sum / (individuals.size()-1));
 }
 
-int Population::size() {
+unsigned int Population::size() {
 	return individuals.size();
 }
 

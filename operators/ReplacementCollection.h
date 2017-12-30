@@ -31,9 +31,15 @@ const std::function<IContainer*(Population*, IContainer*)> empty =
  * Do nothing.
  */
 const std::function<IContainer*(Population*, IContainer*)> generational =
-		[](Population* p, IContainer*) {
-			throw runtime_error("generational model not implemented yet");
-			return nullptr;
+		[](Population* p, IContainer* g) {
+
+			// the get the worst by fitness
+			IContainer * toremove= p->worsts(p->size());
+
+			// just add the new  individuals
+			p->add(g);
+
+			return toremove;
 		};
 
 const std::function<IContainer*(Population*, IContainer*)> steadystate =

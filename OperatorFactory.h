@@ -59,9 +59,10 @@ public:
 	 *
 	 * @return A new selection operator. The function returned has the signature:
 	 *        param1 population The population.
+	 *        param2 n The number of individuals to be selected.
 	 *        return A new set with the individuals selected.
 	 */
-	std::function<IContainer* (Population*)> createParentSelectionOperator();
+	std::function<IContainer* (Population*, unsigned int)> createParentSelectionOperator();
 
 	/*
 	 * Create a new replacement selection operator. This method return a set of individuals
@@ -78,17 +79,24 @@ public:
 	 */
 	std::function<IContainer* (Population*, IContainer*)> createReplacementSelectionOperator();
 
-	/*
-	 * Create a new emigration selection operator.
-	 * @return A new migration selection operator.
+	/*!
+	 * \brief Create a new emigration selection operator.
+	 * @return A new migration selection operator. The function returned has the signature:
+	 *    param1 population The poupulation to select from.
+	 *    param2 n The number of individuals to select.
+	 *    return A new container with the selected individuals.
 	 */
-	std::function<IContainer* (Population*)> createEmigrationSelectionOperator();
+	std::function<IContainer* (Population*, unsigned int)> createEmigrationSelectionOperator();
 
-	/*
-	 * Create a new immigration selection operator.
-	 * @return A new migration selection operator.
+	/*!
+	 * \brief Create a new immigration selection operator.
+	 *
+	 * @return A new immigration selection operator. The function returned has the signature:
+	 *    param1 population The poupulation to select from.
+	 *    param2 n The number of individuals to select.
+	 *    return A new container with the selected individuals.
 	 */
-	std::function<IContainer* (Population*)> createImmigrationSelectionOperator();
+	std::function<IContainer* (Population*, unsigned int)> createImmigrationSelectionOperator();
 
 
 	/*

@@ -71,7 +71,7 @@ public:
 	IContainer * worsts(int n);
 	IContainer * bests(int n);
 
-	int size();
+	unsigned int size();
 
 	Individual * at(int i);
 

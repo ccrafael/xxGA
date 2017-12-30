@@ -9,8 +9,6 @@
 #ifndef ISLAND_H_
 #define ISLAND_H_
 
-#define synchronized(M)  for(std::unique_lock<std::mutex> M##_lock = M; M##_lock; M##_lock.setUnlock())
-
 #include <condition_variable>
 #include <mutex>
 #include <functional>
@@ -33,12 +31,14 @@ class Island: public GA {
 
 	static int count;
 	static std::mutex sync_mutex;
+	static std::mutex guard_mutex;
 	static std::condition_variable sync;
 
 	int num_islands;
 	int id;
-	std::function<IContainer* (Population*)> emigrationSelection;
-	std::function<IContainer* (Population*)> immigrationSelection;
+	int num_emigrants;
+	std::function<IContainer* (Population*, unsigned int)> emigrationSelection;
+	std::function<IContainer* (Population*, unsigned int)> immigrationSelection;
 
 	static log4cxx::LoggerPtr logger;
 
@@ -49,7 +49,7 @@ class Island: public GA {
 	static constexpr const char* MAX_GENERATIONS_PARAM = "NumberGenerations";
 	static constexpr const char * PARAM_RUN_FOR_N_GENERATIONS =
 			"MigrationEveryGenerations";
-
+	static constexpr const char* NUMBER_MIGRANTS_PARAM = "NumberMigrants";
 
 	/*
 	 * Method to synchronize all threads before the migration process starts and after the migration process.

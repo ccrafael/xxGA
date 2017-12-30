@@ -18,6 +18,8 @@ GA::GA(Problem * problem, OperatorFactory * operatorFactory, Config * config,
 	this->output = output;
 	this->population = nullptr;
 
+	this->num_parents = config->getInt("NumParents");
+
 	// Build the operators
 	this->parentSelection = operatorFactory->createParentSelectionOperator();
 	this->replacementSelection =
@@ -67,7 +69,7 @@ void GA::evolve(int generations) {
 
 		// Selection
 		t0 = chrono::steady_clock::now();
-		IContainer * parents = this->parentSelection(population);
+		IContainer * parents = this->parentSelection(population, num_parents);
 		t1 = chrono::steady_clock::now();
 		output->selection(chrono::duration<double, milli>(t1 - t0).count());
 

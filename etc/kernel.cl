@@ -1,6 +1,5 @@
 double rosenbrock(double * vals, int nvals) {
 	double val = 0;
-	//int j = (get_global_id(0)*nvals);
 	
 	for (unsigned int i = 0; i < nvals-1; i++) {
 		double xi = vals[i];
@@ -43,22 +42,13 @@ void decode(double * vals, global char * genes, int numgenes, int numvars, doubl
 }
 
 void grayToBinary(global char * genes, int numgenes) {
-	// aux buffer TODO this buffer marks the maximum numgenes to use
-	char binary[3200];
 	int j = (get_global_id(0)*numgenes);
-	binary[0] = genes[j];
-	
 	for (int i = 1; i < numgenes; i++) {
 		if (!genes[j + i]) {
-			binary[i] = binary[i-1];
+			genes[j + i] = genes[j + i - 1];
 		} else {
-			binary[i] = !binary[i-1];
+			genes[j + i] = !genes[j + i - 1];
 		}
-	}
-	
-	// copy back the buffer
-	for (int i = 0; i < numgenes; i++) {
-		genes[j + i] = binary[i];
 	}
 }
 		

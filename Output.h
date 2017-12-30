@@ -39,6 +39,8 @@ class Output {
 	ofstream generation_file;
 	ofstream  solution_file;
 	int numgen_to_print;
+	int execution;
+
 	std::mutex m;
 	static constexpr const char* SEPARATOR = ",";
 
@@ -113,6 +115,8 @@ public:
 	 * Just print the configuration.
 	 */
 	void print_conf();
+
+	void add_execution();
 };
 
 #endif /* OUTPUT_H_ */

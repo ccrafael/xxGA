@@ -13,6 +13,7 @@ using namespace std;
 log4cxx::LoggerPtr Island::logger(log4cxx::Logger::getLogger("island"));
 int Island::count = 0;
 std::mutex Island::sync_mutex;
+std::mutex Island::guard_mutex;
 std::condition_variable Island::sync;
 
 /**
@@ -26,11 +27,15 @@ Island::Island(int id, Problem * problem, OperatorFactory * operatorFactory,
 	LOG4CXX_DEBUG(logger, "Creating a new Island with id: "<< id<<".");
 	this->id = id;
 	this->maxGenerations = config->getInt(MAX_GENERATIONS_PARAM);
+
 	this->emigrationSelection =
 			operatorFactory->createEmigrationSelectionOperator();
+
 	this->immigrationSelection =
 			operatorFactory->createImmigrationSelectionOperator();
+
 	this->num_islands = num_islands;
+	this->num_emigrants = config->getInt(NUMBER_MIGRANTS_PARAM);
 
 }
 
@@ -59,7 +64,9 @@ void Island::evolveIsland() {
 		evolve(generationsBeforeMigration);
 
 		// emigrate population between neighbors
-		emigration();
+		if ( !this->isEnd() && num_islands > 1) {
+			emigration();
+		}
 
 		LOG4CXX_DEBUG(logger, " Island: "<< id<<" Generation: "<<generation)
 	}
@@ -87,55 +94,48 @@ void Island::emigration() {
 
 	// extract from my population all the individuals that will leave
 	// this can be done concurrently
-	vector<IContainer *> orda;
-	std::for_each(neighborhood.begin(), neighborhood.end(),
-			[this, myPopulation, &orda](Island * other) {
-
-				IContainer * emigrants = this->emigrationSelection(myPopulation);
-				orda.push_back(emigrants);
-				myPopulation->remove(emigrants);
-			});
+	IContainer * emigrants = this->emigrationSelection(myPopulation, this->num_emigrants);
+	myPopulation->remove(emigrants);
 
 	//synchronization barrier all island wait to start the migration process
 	migration_sync(id, num_islands);
 
-	// extract from other populations the individual that will came
-	// this cant be done concurrently because the same individual could be selected by two neighbors
-	vector<IContainer *> other_orda;
+	int n = num_emigrants / neighborhood.size();
+	int rest = num_emigrants % neighborhood.size();
+
+	unique_lock<mutex> lock(guard_mutex);
+
 	for (vector<Island*>::iterator it = neighborhood.begin();
 			it != neighborhood.end(); ++it) {
 
 		Population * otherPopulation = (*it)->getPopulation();
+
 		LOG4CXX_DEBUG(logger,
-				"Migration "<< num_migration<< " Island "<<id<<" with num_neighbors ("<<neighborhood.size()<<") is migrating with "<<(*it)->id<<".");
+				"Migration "<< num_migration<< " Island "<<id<<" with num_neighbors ("<<neighborhood.size()
+					<<") is migrating with "<<(*it)->id<<" mypop: "<<myPopulation->size()<<" n: "<<n<< " rest: "<<rest<<".");
 
-		unique_lock<mutex> lock(sync_mutex);
-
-		IContainer * immigrants = this->emigrationSelection(otherPopulation);
+		if (it == neighborhood.end()-1) {
+			n = n + rest;
+		}
+		IContainer * immigrants = this->immigrationSelection(otherPopulation, n);
 
 		// Exchange the the individuals between the populations
 		otherPopulation->remove(immigrants);
-		other_orda.push_back(immigrants);
+		myPopulation->add(immigrants);
+
+		IContainer m(emigrants->begin(), emigrants->begin() + n);
+		emigrants->erase(emigrants->begin(), emigrants->begin() + n);
+		otherPopulation->add(&m);
+
+		delete immigrants;
 	}
-
-	int i = 0;
-	for (vector<Island*>::iterator it = neighborhood.begin();
-			it != neighborhood.end(); ++it) {
-
-		Population * otherPopulation = (*it)->getPopulation();
-		unique_lock<mutex> lock(sync_mutex);
-
-		// Exchange the the individuals between the populations
-		otherPopulation->add(orda[i]);
-		myPopulation->add(other_orda[i]);
-
-		delete other_orda[i];
-		delete orda[i];
-		i++;
-	}
+	num_migration ++;
+	lock.unlock();
 
 	//synchronization barrier all island wait be fully migrated
 	migration_sync(id, num_islands);
+
+	delete emigrants;
 }
 
 void Island::invalidate() {

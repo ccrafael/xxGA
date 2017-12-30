@@ -25,7 +25,7 @@ using namespace std;
 class GA {
 	static log4cxx::LoggerPtr logger;
 
-	std::function<IContainer* (Population*)> parentSelection;
+	std::function<IContainer* (Population*, unsigned int)> parentSelection;
 	std::function<IContainer* (IContainer*, int)> crossover;
 	std::function<void(IContainer*)> mutation;
 	std::function<IContainer* (Population*, IContainer*)> replacementSelection;
@@ -34,6 +34,7 @@ class GA {
 	std::chrono::time_point<std::chrono::steady_clock> t0;
 	std::chrono::time_point<std::chrono::steady_clock> t1;
 
+	int num_parents;
 protected:
 	Population * population;
 	Config * config;

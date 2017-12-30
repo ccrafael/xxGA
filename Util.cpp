@@ -42,7 +42,7 @@ vector<int> Util::random(int range, int size) {
 	thread_local std::mt19937 generator(rd());
 	std::uniform_int_distribution<int> dis(0, range - 1);
 
-	while (s.size() < size) {
+	while (s.size() < (unsigned int) size) {
 		int r = dis(generator);
 		s.insert(r);
 	}

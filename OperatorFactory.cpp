@@ -62,7 +62,7 @@ std::function<void(IContainer*)> OperatorFactory::createMutationOperator() {
  * Create a new selection operator.
  * @return A new selection operator.
  */
-std::function<IContainer* (Population*)> OperatorFactory::createParentSelectionOperator() {
+std::function<IContainer* (Population*, unsigned int)> OperatorFactory::createParentSelectionOperator() {
 	switch (config->getInt("ParentSelectionType")) {
 	case 1: {
 		LOG4CXX_TRACE(logger, "Selection: Fitness proportional selection. ");
@@ -121,27 +121,27 @@ std::function<IContainer* (Population*, IContainer*)> OperatorFactory::createRep
  * Create a new Emmigration selection operator.
  * @return A new migration selection operator.
  */
-std::function<IContainer* (Population*)> OperatorFactory::createEmigrationSelectionOperator() {
-	switch (config->getInt("MigrationType")) {
+std::function<IContainer* (Population*, unsigned int)> OperatorFactory::createEmigrationSelectionOperator() {
+	switch (config->getInt("EmigrationType")) {
 	case 1: {
 
 		LOG4CXX_TRACE(logger, "Emigration: basicmigration ");
-		return selection::basicmigration;
+		return selection::basic_migration;
 	}
 	case 2: {
 
 		LOG4CXX_TRACE(logger, "Emigration: worst. ");
-		return selection::worsts;
+		return selection::worsts_migration;
 	}
 	case 3: {
 
 		LOG4CXX_TRACE(logger, "Emigration: bests. ");
-		return selection::bests;
+		return selection::bests_migration;
 	}
 	default: {
 
 		LOG4CXX_TRACE(logger, "Emigration: basic. ");
-		return selection::basicmigration;
+		return selection::basic_migration;
 	}
 	}
 
@@ -151,8 +151,29 @@ std::function<IContainer* (Population*)> OperatorFactory::createEmigrationSelect
  * Create a new Immigration selection operator.
  * @return A new migration selection operator.
  */
-std::function<IContainer* (Population*)> OperatorFactory::createImmigrationSelectionOperator() {
-	return selection::basicmigration;
+std::function<IContainer* (Population*, unsigned int)> OperatorFactory::createImmigrationSelectionOperator() {
+	switch (config->getInt("ImmigrationType")) {
+	case 1: {
+
+		LOG4CXX_TRACE(logger, "Immigration: basicmigration ");
+		return selection::basic_migration;
+	}
+	case 2: {
+
+		LOG4CXX_TRACE(logger, "Immigration: worst. ");
+		return selection::worsts_migration;
+	}
+	case 3: {
+
+		LOG4CXX_TRACE(logger, "Immigration: bests. ");
+		return selection::bests_migration;
+	}
+	default: {
+
+		LOG4CXX_TRACE(logger, "Immigration: basic. ");
+		return selection::basic_migration;
+	}
+	}
 }
 
 std::function<void(Problem*, IContainer*)> OperatorFactory::createEvaluationOperator() {

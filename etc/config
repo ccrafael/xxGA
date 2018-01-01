@@ -1,5 +1,5 @@
 # Number of executions of the whole algorithm
-executions=5
+executions = 30
 
 OutputGenerationFile = generation
 OutputSolutionFile = solution--
@@ -15,25 +15,25 @@ NumberIsles = 8
 # 1 ring only connected to the right
 # 2 ring connected both sides
 # 3 all with all
-Topology = 2
+Topology = 1
 
 # Number of individuals for a population into a island
 NumberIndividuals = 128
 
 # Number of genes for each individual
-NumberGenes = 640
+NumberGenes = 1280
 
 # Number of generations
-NumberGenerations = 50000
+NumberGenerations = 30000
 
 # Number of generations before the migration process start
-MigrationEveryGenerations = 1000
+MigrationEveryGenerations = 250
 
 # Migration type
 # 1: Select NumberMigrants randomly
 # 2: select the NumberMigrants worsts individuals
 # 3: select the NumberMigrants best individuals
-EmigrationType = 2
+EmigrationType = 1
 
 # Number of migrants 
 NumberMigrants = 8
@@ -42,7 +42,7 @@ NumberMigrants = 8
 # 1: Select NumberMigrants randomly
 # 2: select the NumberMigrants worsts individuals
 # 3: select the NumberMigrants best individuals
-ImmigrationType = 3
+ImmigrationType = 1
 
 # Type of parent selection (method of constructing the mating pool):
 #  0: basic seleccion (two parents randomly 
@@ -53,7 +53,7 @@ ImmigrationType = 3
 ParentSelectionType = 4
 
 # num parents to produce offspring
-NumParents = 64
+NumParents = 32
 
 # Expected number of offspring 
 NumberOffspring = 128
@@ -79,10 +79,10 @@ MutationType = 2
 # Mutation rate for each gen, remember for each gen so if a individual has N gens the cumulated probability 
 # that an individual get a mutation will be: (1-(1-MutationRate)^NumGenes) therefore
 # this value should be a low rate if the number of genes is high
-MutationRate = 0.0008
+MutationRate = 0.00075
 
 # Mutation probability. For MutationType basic. Just one gene will mutate with p=MutationProbability
-MutationProbability=0.0009
+MutationProbability=0.0004
 
 # Type of survivor selection:
 # 1: Generational model
@@ -94,4 +94,4 @@ SurvivorSelectionType = 3
 GenerationalGap = 29
 
 # evaluation type, 1 Normal evaluation 2 Use openCL Evaluation
-EvaluationType = 2
+EvaluationType = 1

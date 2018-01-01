@@ -18,11 +18,14 @@ ax.set_xlabel('Generacion')
 
 mean = matplotlib.mlab.rec_groupby(data, ('generation',), (('mean_fitness',np.mean,'avg_mean'),))
 best = matplotlib.mlab.rec_groupby(data, ('generation',), (('fitness',np.max,'max_fitness'),))
+best_per_exec = matplotlib.mlab.rec_groupby(data, ('execution', 'generation',), (('fitness',np.max,'max_fitness'),))
+mbest = matplotlib.mlab.rec_groupby(best_per_exec, ('generation',), (('max_fitness',np.mean,'max_fitness_avg'),))
 
 #result2 = matplotlib.mlab.rec_groupby(data, ('generation',), (('stdev_fitness',np.mean,'avg_stddev'),))
 # line1, = ax.plot(x, result['avg_mean'], label='fitness avg')
 line1, = ax.plot(x, mean['avg_mean'], label='fitness mean')
 line2, = ax.plot(x, best['max_fitness'], label='best fitness')
+line3, = ax.plot(x, mbest['max_fitness_avg'], label='best fitness avg')
 
 # line2, = ax.plot(x, result2['avg_stddev'], label='fitness stdev')
 

@@ -19,6 +19,7 @@ Logging using log4cxx 0.10 https://logging.apache.org/log4cxx/latest_stable/:
 ```
 apt-get install liblog4cxx-dev 
 ```
+OpenCL 1.2.
 
 The project uses C++14:
 https://gcc.gnu.org/gcc-6/changes.html
@@ -39,7 +40,7 @@ make
 After compile.
 
 ```
-xxGA <conf_file> <conf_log_file>
+xxGA  <conf_log_file> <conf_file>
 ```
 
 The conf_file and the conf_log_file can be found into the root folder.
@@ -49,7 +50,7 @@ its own file. The problem configuration file is specified into conf_file.
 
 To change the problem the main.cpp must be changed and a new compilation is needed.
 
-There are other two problem implemented:
+There are other two problem implemented but need to be activated programatically:
 - Generic functions optimization:
 This problem load function from its configuration file.
 This http://warp.povusers.org/FunctionParser/ library was used to parse functions from a configuration file. 

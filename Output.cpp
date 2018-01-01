@@ -106,11 +106,13 @@ void Output::print_conf() {
 			<< config->getProperty("NumberGenes") << endl;
 	this->solution_file << "MigrationEveryGenerations: "
 			<< config->getProperty("MigrationEveryGenerations") << endl;
+	this->solution_file << "Topology:            "
+				<< config->getProperty("Topology") << endl;
 	this->solution_file << "NumberMigrants:      "
 			<< config->getProperty("NumberMigrants") << endl;
-	this->solution_file << "EmigrationType:       "
+	this->solution_file << "EmigrationType:      "
 			<< config->getProperty("EmigrationType") << endl;
-	this->solution_file << "ImmigrationType:       "
+	this->solution_file << "ImmigrationType:     "
 				<< config->getProperty("ImmigrationType") << endl;
 	this->solution_file << "ParentSelectionType: "
 			<< config->getProperty("ParentSelectionType") << endl;
@@ -130,7 +132,7 @@ void Output::print_conf() {
 				<< config->getProperty("MutationProbability") << endl;
 	this->solution_file << "SurvivorSelectionType: "
 			<< config->getProperty("SurvivorSelectionType") << endl;
-	this->solution_file << "EvaluationType:       "
+	this->solution_file << "EvaluationType:      "
 				<< config->getProperty("EvaluationType") << endl;
 }
 

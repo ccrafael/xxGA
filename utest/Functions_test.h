@@ -10,6 +10,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 #include "utests.h"
 #include "../Individual.h"
 #include "../GenotypeBit.h"

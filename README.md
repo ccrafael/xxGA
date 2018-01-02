@@ -20,6 +20,10 @@ Logging using log4cxx 0.10 https://logging.apache.org/log4cxx/latest_stable/:
 apt-get install liblog4cxx-dev 
 ```
 OpenCL 1.2.
+To compile you need to install the OpenCL headers. But to link and at runtime you will need the OpenCL library, usually provided by the gpu drivers. 
+```
+apt-get install opencl-headers
+```
 
 The project uses C++14:
 https://gcc.gnu.org/gcc-6/changes.html

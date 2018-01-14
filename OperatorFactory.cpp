@@ -6,6 +6,7 @@
  */
 
 #include "OperatorFactory.h"
+
 log4cxx::LoggerPtr OperatorFactory::logger(
 		log4cxx::Logger::getLogger("operatorFactory"));
 
@@ -33,6 +34,12 @@ std::function<IContainer* (IContainer*, int)> OperatorFactory::createCrossoverOp
 		LOG4CXX_TRACE(logger, "Crossover: N point crossover");
 		return crossover::npoint;
 	}
+	case 5: {
+		return crossover::orderedcrossover;
+	}
+	case 6: {
+			return crossover::realordercrossover;
+	}
 	default: {
 		LOG4CXX_TRACE(logger, "Crossover: One point crossover");
 		return crossover::onepoint;
@@ -53,6 +60,9 @@ std::function<void(IContainer*)> OperatorFactory::createMutationOperator() {
 		return mutation::basic;
 	case 2:
 		return mutation::rate;
+	case 3: return mutation::permutation;
+	case 4: return mutation::insertion;
+	case 5: return mutation::shortpermutation;
 	default:
 		return mutation::basic;
 	}
@@ -82,6 +92,7 @@ std::function<IContainer* (Population*, unsigned int)> OperatorFactory::createPa
 		LOG4CXX_TRACE(logger, "Selection: Tournament selection. ");
 		return selection::tournament;
 	}
+
 	default: {
 
 		LOG4CXX_TRACE(logger, "Selection: Basic (random) selection. ");
@@ -187,4 +198,11 @@ std::function<void(Problem*, IContainer*)> OperatorFactory::createEvaluationOper
 		return evaluation::basicevaluation;
 	}
 }
+
+std::function<Individual * (Problem *, int birth)> OperatorFactory::createIndividualCreator() {
+	return [](Problem * p, int birth) {
+		return p->create_new_individual(birth);
+	};
+}
+
 

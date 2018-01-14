@@ -28,6 +28,7 @@ GA::GA(Problem * problem, OperatorFactory * operatorFactory, Config * config,
 	this->crossover = operatorFactory->createCrossoverOperator();
 
 	this->evaluation = operatorFactory->createEvaluationOperator();
+	this->individual_creator = operatorFactory->createIndividualCreator();
 }
 
 GA::~GA() {
@@ -42,7 +43,7 @@ void GA::init() {
 
 	LOG4CXX_TRACE(logger, "Create "<<num_individuals<<" of size "<<num_genes<<".");
 	for (int i = 0; i < num_individuals; i++) {
-		individuals.push_back(new Individual(num_genes, 0));
+		individuals.push_back(individual_creator(problem, 0));
 	}
 
 	LOG4CXX_TRACE(logger, "Ind created.");

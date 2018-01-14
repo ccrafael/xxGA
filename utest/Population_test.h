@@ -173,7 +173,8 @@ void Population_test::setUp(void) {
 	IContainer * individuals = new IContainer();
 
 	for (int i = 0; i < num_individuals; i++) {
-		Individual * ind = new Individual(num_genes, 0);
+		GenotypeBit * g = new GenotypeBit(num_genes);
+		Individual * ind = new Individual(g, 0);
 		ind->fitness(problem->evaluate(ind));
 		ind->setEvaluated(true);
 

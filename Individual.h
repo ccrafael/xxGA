@@ -7,25 +7,24 @@
 #ifndef INDIVIDUAL_H_
 #define INDIVIDUAL_H_
 
-#include "GenotypeBit.h"
+#include <functional>
+#include "Genotype.h"
+
 using namespace std;
 
 class Individual {
-	GenotypeBit * genotype;
+	Genotype * genotype;
 
 	double _fitness;
 	int gen_birth;
 	bool eval;
 public:
-	/**
-	 * create an idividual with a random genotype
-	 */
-	Individual(int genotypeSize, int birth);
+
 
 	/**
-	 * create an individual with a suplied genotype
+	 * create an individual with a suplied genotype.
 	 */
-	Individual(GenotypeBit * genotype, int birth);
+	Individual(Genotype * genotype, int birth);
 
 	virtual ~Individual();
 
@@ -43,7 +42,7 @@ public:
 	/**
 	 * get individual's genotype
 	 */
-	GenotypeBit * get_genotype();
+	Genotype * get_genotype();
 
 
 	bool isEvaluated();

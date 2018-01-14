@@ -7,6 +7,7 @@
 #include "../GenotypeBit.h"
 #include "../GenotypeNumber.h"
 #include "../Individual.h"
+#include "../GenotypeBit.h"
 #include "../Util.h"
 #include "ParseFunctionProblem.h"
 
@@ -43,7 +44,7 @@ ParseFunctionProblem::ParseFunctionProblem(Config * config) :
 
 	this->configvar = new pvariable[num_vars];
 
-	int numgenes = config->getInt("NumberGenes");
+	this->numgenes = config->getInt("NumberGenes");
 	int numbits = numgenes / num_vars;
 
 	std::ostringstream aux;
@@ -82,7 +83,7 @@ ParseFunctionProblem::ParseFunctionProblem(Config * config) :
 }
 
 double ParseFunctionProblem::evaluate(Individual * individual) {
-	std::vector<double> d = decode(individual->get_genotype());
+	std::vector<double> d = decode((GenotypeBit*)individual->get_genotype());
 	double values[d.size()]={0};
 
 	double val = 0;
@@ -113,7 +114,7 @@ double ParseFunctionProblem::evaluate(Individual * individual) {
 string ParseFunctionProblem::decode(Individual * individual) {
 	stringstream aux;
 	int offset = 0;
-	vector<bool> v = individual->get_genotype()->grayToBinary();
+	vector<bool> v = ((GenotypeBit*)individual->get_genotype())->grayToBinary();
 	for (int i = 0; i < num_vars; i++) {
 		aux << "x" << i << ": "
 				<< dec(v, offset,
@@ -151,5 +152,11 @@ vector<double> ParseFunctionProblem::decode(GenotypeBit * genotype) {
 		offset += configvar[i].bits;
 	}
 	return result;
+}
+
+
+
+Individual * ParseFunctionProblem::create_new_individual(int birth) {
+	return new Individual(new GenotypeBit(numgenes), birth);
 }
 

@@ -39,7 +39,7 @@ private:
 
 
 void Individual_test::test(void) {
-	GenotypeBit * g = testObj->get_genotype();
+	GenotypeBit * g = (GenotypeBit*)testObj->get_genotype();
 	CPPUNIT_ASSERT(nullptr != g);
 	CPPUNIT_ASSERT(g->size() == 5);
 	CPPUNIT_ASSERT(testObj->fitness() == 0);
@@ -72,8 +72,10 @@ void Individual_test::test(void) {
 }
 
 void Individual_test::setUp(void) {
-	testObj = new Individual(5, 3);
-	GenotypeBit * g = new GenotypeBit();
+	GenotypeBit * g = new GenotypeBit(3);
+	testObj = new Individual(g, 3);
+
+	g = new GenotypeBit();
 	g->push_back(true);
 	g->push_back(true);
 	g->push_back(true);

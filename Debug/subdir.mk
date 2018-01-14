@@ -8,7 +8,6 @@ CPP_SRCS += \
 ../Config.cpp \
 ../Environment.cpp \
 ../GenotypeBit.cpp \
-../GenotypeNumber.cpp \
 ../Individual.cpp \
 ../Island.cpp \
 ../OperatorFactory.cpp \
@@ -24,7 +23,6 @@ OBJS += \
 ./Config.o \
 ./Environment.o \
 ./GenotypeBit.o \
-./GenotypeNumber.o \
 ./Individual.o \
 ./Island.o \
 ./OperatorFactory.o \
@@ -40,7 +38,6 @@ CPP_DEPS += \
 ./Config.d \
 ./Environment.d \
 ./GenotypeBit.d \
-./GenotypeNumber.d \
 ./Individual.d \
 ./Island.d \
 ./OperatorFactory.d \

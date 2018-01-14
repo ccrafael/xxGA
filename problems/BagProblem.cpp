@@ -4,11 +4,11 @@
 #include <cmath>
 #include <sstream>
 #include <algorithm>
+#include <cstring>
 
 #include "../Config.h"
 #include "../exception/ProblemException.h"
 #include "../GenotypeBit.h"
-#include "../GenotypeNumber.h"
 #include "../Individual.h"
 #include "../Util.h"
 
@@ -25,6 +25,7 @@ BagProblem::BagProblem(Config * config) :
 				" BagProblem needs a configuration problem file.");
 	}
 
+	this->numgenes = config->getInt("GenesNumber");
 	this->max_size = configProblem->getDouble("size");
 	string allbins(configProblem->getProperty("bins"));
 
@@ -45,7 +46,7 @@ BagProblem::BagProblem(Config * config) :
 }
 
 double BagProblem::evaluate(Individual * individual) {
-	GenotypeBit* g = individual->get_genotype();
+	GenotypeBit* g = (GenotypeBit*)individual->get_genotype();
 
 	double sum = 0;
 	double count = 0;
@@ -67,7 +68,7 @@ double BagProblem::evaluate(Individual * individual) {
 string BagProblem::decode(Individual * individual) {
 	stringstream aux;
 
-	GenotypeBit* g = individual->get_genotype();
+	GenotypeBit* g = (GenotypeBit*)individual->get_genotype();
 	aux<<"[";
 	for (int i = 0; i < g->size(); i++) {
 		if (g->at(i)) {
@@ -77,6 +78,11 @@ string BagProblem::decode(Individual * individual) {
 	aux<<"]";
 	return aux.str();
 }
+
+Individual * BagProblem::create_new_individual(int birth) {
+	return new Individual(new GenotypeBit(numgenes), birth);
+}
+
 
 BagProblem::~BagProblem() {
 }

@@ -35,6 +35,7 @@ class FunctionsProblem: public Problem {
 	static log4cxx::LoggerPtr plogger;
 	CLEvaluator * clEvaluator;
 
+	int numgenes;
 	short num_vars;
 
 	// se usa para evaluar la funcion buscando en todo el dominio
@@ -83,10 +84,13 @@ public:
 
 	double evaluate(Individual * individual) override;
 	string decode(Individual * individual) override;
+	Individual * create_new_individual(int birth) override;
 
 	void clevaluate(IContainer * individuals);
 
 	string kernel_code();
+
+
 
 };
 #endif /* FUNCTIONSPROBLEM_H_ */

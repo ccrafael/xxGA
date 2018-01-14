@@ -109,6 +109,17 @@ public:
 	 */
 	std::function<void (Problem*, IContainer*)> createEvaluationOperator();
 
+
+	/*
+	 * Create the individual creator operator. This operator must create new individuals.
+	 *
+	 * @return A new creator operator. The function returned has the signature:
+	 *     param1 The problem reference.
+	 *     param2 The birth date in generations.
+	 *     return A new genotype for a individual.
+	 */
+	std::function<Individual * (Problem *, int birth)> createIndividualCreator();
+
 };
 
 #endif /* OPERATORFACTORY_H_ */

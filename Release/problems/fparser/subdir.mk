@@ -5,18 +5,15 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CC_SRCS += \
 ../problems/fparser/example.cc \
-../problems/fparser/fparser.cc \
-../problems/fparser/fpoptimizer.cc 
+../problems/fparser/fparser.cc 
 
 CC_DEPS += \
 ./problems/fparser/example.d \
-./problems/fparser/fparser.d \
-./problems/fparser/fpoptimizer.d 
+./problems/fparser/fparser.d 
 
 OBJS += \
 ./problems/fparser/example.o \
-./problems/fparser/fparser.o \
-./problems/fparser/fpoptimizer.o 
+./problems/fparser/fparser.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

@@ -21,9 +21,11 @@
 #include "exception/ConfigurationException.h"
 
 #include "problems/BagProblem.h"
+#include "problems/FunctionsProblem.h"
+#include "problems/Image.h"
 #include "Problem.h"
 #include "Output.h"
-#include "problems/FunctionsProblem.h"
+
 #include "Environment.h"
 #include "utest/utests.h"
 
@@ -85,8 +87,9 @@ int main(int argc, char** argv) {
 		 * TODO create an abstraction of this to easily change the problem.
 		 */
 
-		Problem * problem = new FunctionsProblem(&config);
+		//Problem * problem = new FunctionsProblem(&config);
 		//Problem *  proble = new BagProblem(&config);
+		Problem * problem = new ImageProblem(&config);
 
 		OperatorFactory operatorFactory(&config);
 
@@ -94,7 +97,6 @@ int main(int argc, char** argv) {
 
 		// print the header
 		output.print_header();
-
 
 		int num_islands = config.getInt("NumberIsles");
 		int topology = config.getInt("Topology");
@@ -193,7 +195,7 @@ int main(int argc, char** argv) {
 			output.print(better);
 
 			output.add_execution();
-		}// end for executions
+		}			// end for executions
 
 	} catch (ConfigurationException &e) {
 		LOG4CXX_ERROR(logger, " Error loading configuration: "<<e.getMsg());
@@ -201,17 +203,20 @@ int main(int argc, char** argv) {
 		return 1;
 	} catch (NotFoundException &e) {
 		LOG4CXX_ERROR(logger, " Error reading property: "<<e.getMsg());
-		return 1;
+		return 2;
+	} catch (std::bad_cast& bc) {
+			LOG4CXX_ERROR(logger,"wrong algorithm configuration!! bad_cast caught: " << bc.what());
+			return 4;
 	} catch (const std::exception& re) {
 		LOG4CXX_ERROR(logger, "exception: "<<re.what());
-		return 1;
-	} catch (...) {
+		return 3;
+	}catch (...) {
 		std::exception_ptr p = std::current_exception();
 
 		LOG4CXX_ERROR(logger,
 				" Unknown error: "<<(p ? p.__cxa_exception_type()->name() : "null"));
 
-		return 1;
+		return 5;
 	}
 
 	LOG4CXX_INFO(logger, "This is the end.");

@@ -79,7 +79,6 @@ const std::function<IContainer* (Population*, unsigned  int)> basic =
 const std::function<IContainer* (Population*, unsigned  int)> basic_migration =
 		[](Population* pop,unsigned  int n) {
 			IContainer * container = new IContainer();
-			Environment * context = Environment::instance();
 
 			// select without repetition
 			vector<int> selected = Util::random((int)pop->size(), n);

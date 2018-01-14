@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 
+#include "Genotype.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ using namespace std;
  * also should be easily interchangable with number genotype
  * may be templates should be used.
  */
-class GenotypeBit{
+class GenotypeBit: public Genotype{
 	vector<bool> genotype;
 public:
 	/*
@@ -38,7 +39,7 @@ public:
 
 	bool at(int i);
 
-	int size();
+	int size() override;
 
 	/*
 	 * Return the internal representation, supposed to be on gray to binary.

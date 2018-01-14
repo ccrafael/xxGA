@@ -105,7 +105,7 @@ FunctionsProblem::FunctionsProblem(Config * config) :
 
 	this->configvar = new variable[num_vars];
 
-	int numgenes = config->getInt("NumberGenes");
+	numgenes = config->getInt("NumberGenes");
 	int numbits = numgenes / num_vars;
 
 	double xmin = configProblem->getDouble("xmin");
@@ -176,7 +176,7 @@ FunctionsProblem::~FunctionsProblem() {
 }
 
 double FunctionsProblem::evaluate(Individual * individual) {
-	std::vector<double> d = decode(individual->get_genotype());
+	std::vector<double> d = decode((GenotypeBit*)individual->get_genotype());
 
 	double val = function(d);
 
@@ -189,7 +189,7 @@ double FunctionsProblem::evaluate(Individual * individual) {
 string FunctionsProblem::decode(Individual * individual) {
 	stringstream aux;
 	int offset = 0;
-	vector<bool> v = individual->get_genotype()->grayToBinary();
+	vector<bool> v =((GenotypeBit*) individual->get_genotype())->grayToBinary();
 
 	for (int i = 0; i < num_vars; i++) {
 		aux << "x" << i << ": "
@@ -230,4 +230,10 @@ vector<double> FunctionsProblem::decode(GenotypeBit * genotype) {
 
 void FunctionsProblem::clevaluate(IContainer * individuals) {
 	this->clEvaluator->evaluate(individuals);
+}
+
+
+
+Individual * FunctionsProblem::create_new_individual(int birth) {
+	return new Individual(new GenotypeBit(numgenes), birth);
 }

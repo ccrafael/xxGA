@@ -36,7 +36,7 @@ bool Util::should_be_changed(double rate) {
 
 vector<int> Util::random(int range, int size) {
 
-	set<int> s;
+	unordered_set<int> s;
 
 	thread_local std::random_device rd;
 	thread_local std::mt19937 generator(rd());

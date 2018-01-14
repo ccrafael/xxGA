@@ -5,6 +5,7 @@
  *      Author: fali
  */
 
+#include "GenotypeBit.h"
 #include "CLEvaluator.h"
 
 log4cxx::LoggerPtr CLEvaluator::logger(
@@ -36,7 +37,7 @@ CLEvaluator::CLEvaluator(Config * config, double * args, int nargs,
 void CLEvaluator::create_kernels(Config * config, int i) {
 	cl_int err = CL_SUCCESS;
 	int genes = args[0];
-	int numvars = args[4];
+
 	int num_individuals = max_individuals / num_threads;
 
 	executor * e = new executor;
@@ -170,7 +171,7 @@ void CLEvaluator::clevaluate(IContainer * container, executor * e) {
 
 		// this  representation is gray if we want to compare
 		// opencl will decode to binary, gpu must works
-		GenotypeBit * g = ind->get_genotype();
+		GenotypeBit * g = (GenotypeBit*)ind->get_genotype();
 
 		for (int j = 0; j < genes; j++) {
 			e->host_genotype[(i * genes) + j] = g->at(j);

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "../Problem.h"
-#include "../GenotypeBit.h"
 
 using namespace std;
 
@@ -21,6 +20,7 @@ using namespace std;
 class BagProblem: public Problem {
 	static log4cxx::LoggerPtr plogger;
 	double max_size;
+	int numgenes;
 	vector<double> bins;
 public:
 
@@ -35,8 +35,9 @@ public:
 	 */
 	virtual ~BagProblem();
 
-	double evaluate(Individual * individual);
-	string decode(Individual * individual);
+	double evaluate(Individual * individual) override;
+	string decode(Individual * individual) override;
+	Individual * create_new_individual(int birth) override;
 
 };
 #endif /* BAGPROBLEM_H_ */

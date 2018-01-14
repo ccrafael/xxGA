@@ -7,15 +7,9 @@
 
 #include "Individual.h"
 
-Individual::Individual(int genotype_size, int birth) {
-	Individual::genotype = new GenotypeBit(genotype_size);
-	this->eval = false;
-	this->_fitness = 0;
-	this->gen_birth = birth;
-}
 
-Individual::Individual(GenotypeBit * genotype, int birth){
-	Individual::genotype = new GenotypeBit( genotype );
+Individual::Individual(Genotype * genotype, int birth){
+	Individual::genotype = genotype;
 	eval = false;
 	this->_fitness = 0;
 	this->gen_birth = birth;
@@ -34,7 +28,7 @@ void Individual::fitness(double value) {
 }
 
 
-GenotypeBit * Individual::get_genotype() {
+Genotype * Individual::get_genotype() {
 	return Individual::genotype;
 }
 

@@ -32,6 +32,7 @@ class ParseFunctionProblem: public Problem {
 
 	FunctionParser fparser;
 	short num_vars;
+	int numgenes;
 
 	// se usa para evaluar la funcion buscando en todo el dominio
 	pvariable * configvar;
@@ -67,8 +68,10 @@ public:
 	 */
 	virtual ~ParseFunctionProblem();
 
-	double evaluate(Individual * individual);
+	double evaluate(Individual * individual) override;
 	string decode(Individual * individual);
+
+	Individual * create_new_individual(int birth) override;
 
 };
 #endif /* PARSEFUNCTIONPROBLEM_H_ */

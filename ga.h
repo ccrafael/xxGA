@@ -15,6 +15,7 @@
 #include "Config.h"
 #include "Population.h"
 #include "Individual.h"
+#include "Genotype.h"
 #include "Output.h"
 
 using namespace std;
@@ -30,6 +31,7 @@ class GA {
 	std::function<void(IContainer*)> mutation;
 	std::function<IContainer* (Population*, IContainer*)> replacementSelection;
 	std::function<void(Problem*, IContainer*)> evaluation;
+	std::function<Individual * (Problem*, int birth)> individual_creator;
 
 	std::chrono::time_point<std::chrono::steady_clock> t0;
 	std::chrono::time_point<std::chrono::steady_clock> t1;

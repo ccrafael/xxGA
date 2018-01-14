@@ -4,41 +4,77 @@
  *  Created on: 27-nov-2008
  *      Author: rafael
  */
-#ifndef GENOTYPE_H_
-#define GENOTYPE_H_
+#ifndef GenotypeNumber_H_
+#define GenotypeNumber_H_
 
 #include <vector>
 #include <iostream>
-#include <sstream>
-#include <cstring>
-
+#include "Genotype.h"
 
 using namespace std;
 
-class GenotypeNumber {
-	vector<double> genotype;
+template<class T>
+class GenotypeNumber: public Genotype {
+	vector<T> genotype;
 public:
 	/*
 	 * Create an empty genotype.
 	 */
-	GenotypeNumber();
+	GenotypeNumber() {
 
-	/*
-	 * Create a random genotype.
-	 */
-	GenotypeNumber(int size);
+	}
+	;
 
-	void set(int index, double value);
-	void push_back(double value);
+	void set(int index, T value) {
+		genotype[index] = value;
+	}
+	;
 
-	double at(int i);
+	void push_back(T value) {
+		genotype.push_back(value);
+	}
+	;
 
-	int size();
+	T at(int i) {
+		return genotype.at(i);
+	}
+	;
 
-	friend ostream & operator<< (ostream& os,GenotypeNumber g);
-	friend ostream & operator<< (ostream& os,GenotypeNumber * g);
+	int size() {
+		return GenotypeNumber::genotype.size();
+	}
+	;
 
-	virtual ~GenotypeNumber();
+	void set(GenotypeNumber<T> * g) {
+		genotype.clear();
+		for (int i = 0; i < g->size(); i++) {
+			genotype.push_back( g->at(i));
+		}
+	}
+
+	friend ostream & operator<<(ostream & os, GenotypeNumber<T> g) {
+		for (int i = 0; i < g.size(); i++) {
+			os << g.at(i);
+		}
+		return os;
+	}
+	;
+
+	friend ostream & operator<<(ostream & os, GenotypeNumber<T> * g) {
+		if (g != NULL) {
+			for (int i = 0; i < g->size(); i++) {
+				os << g->at(i);
+			}
+		} else {
+			os << "null";
+		}
+		return os;
+	}
+	;
+
+	virtual ~GenotypeNumber() {
+	}
+	;
 };
 
-#endif /* GENOTYPE_H_ */
+#endif /* GenotypeNumber_H_ */

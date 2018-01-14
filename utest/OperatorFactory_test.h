@@ -155,7 +155,8 @@ void OperatorFactory_test::setUp(void) {
 	int num_genes = config->getInt(GA::NUMBER_OF_GENES_PARAM);
 
 	for (int i = 0; i < num_individuals; i++) {
-		Individual * ind = new Individual(num_genes, 0);
+		GenotypeBit * g = new GenotypeBit(num_genes);
+		Individual * ind = new Individual(g, 0);
 		ind->fitness(problem->evaluate(ind));
 		ind->setEvaluated(true);
 

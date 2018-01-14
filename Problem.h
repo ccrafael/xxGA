@@ -60,6 +60,13 @@ public:
 	 */
 	virtual string decode(Individual * individual) = 0;
 
+	/*!
+	 * Create a new genotype.
+	 *
+	 * @return A new genotype.
+	 */
+	virtual Individual * create_new_individual(int birth) = 0;
+
 	virtual ~Problem();
 
 
